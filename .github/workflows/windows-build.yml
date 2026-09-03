@@ -1,0 +1,41 @@
+name: Windows Desktop Build
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'desktop-v*'
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run desktop:dist:win
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - name: Installer checksum
+        shell: pwsh
+        run: |
+          Get-ChildItem release/*-Setup.exe | ForEach-Object {
+            $hash = Get-FileHash $_.FullName -Algorithm SHA256
+            "$($hash.Hash.ToLower())  $($_.Name)" | Out-File -FilePath "$($_.FullName).sha256" -Encoding ascii
+          }
+      - uses: actions/upload-artifact@v7
+        with:
+          name: NestCut-Windows-x64
+          path: |
+            release/*-Setup.exe
+            release/*.sha256
+          if-no-files-found: error
+          retention-days: 30

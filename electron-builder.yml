@@ -1,0 +1,31 @@
+appId: com.nestcut.desktop
+productName: NestCut
+asar: true
+extraResources:
+  - from: node_modules
+    to: third-party-notices
+    filter:
+      - '**/LICENSE*'
+      - '**/LICENCE*'
+      - '**/NOTICE*'
+directories:
+  output: release
+files:
+  - dist/**/*
+  - desktop/**/*
+  - package.json
+  - '!node_modules/**/*'
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  artifactName: NestCut-${version}-Windows-${arch}-Setup.${ext}
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  deleteAppDataOnUninstall: false
+  runAfterFinish: true
