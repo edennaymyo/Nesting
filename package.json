@@ -1,6 +1,6 @@
 {
   "name": "nestcut",
-  "version": "0.1.0",
+  "version": "1.0.1",
   "private": true,
   "description": "NestCut offline print and cut layout desktop app",
   "main": "desktop/main.cjs",
