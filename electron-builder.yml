@@ -2,6 +2,8 @@ appId: com.nestcut.desktop
 productName: NestCut
 asar: true
 extraResources:
+  - from: THIRD_PARTY_NOTICES.md
+    to: THIRD_PARTY_NOTICES.md
   - from: node_modules
     to: third-party-notices
     filter:
