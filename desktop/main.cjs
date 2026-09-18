@@ -2,6 +2,7 @@ const { app, BrowserWindow, dialog, Menu, net, protocol, session } = require('el
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 const { APP_URL, CSP, assetPath } = require('./paths.cjs');
+const { allowsPermission } = require('./permissions.cjs');
 
 // Fixed application identity + origin keep presets across restarts and upgrades.
 // A separate profile is used by source-tree development and smoke tests.
@@ -42,8 +43,11 @@ if (!app.requestSingleInstanceLock()) {
       }
     });
 
-    session.defaultSession.setPermissionRequestHandler((_contents, _permission, callback) => callback(false));
-    session.defaultSession.setPermissionCheckHandler(() => false);
+    session.defaultSession.setPermissionRequestHandler((contents, permission, callback, details) => {
+      callback(allowsPermission(contents, permission, details?.requestingUrl));
+    });
+    session.defaultSession.setPermissionCheckHandler((contents, permission, requestingOrigin) =>
+      allowsPermission(contents, permission, requestingOrigin));
     session.defaultSession.on('will-download', (_event, item) => {
       // Electron's native Save As dialog lets the user choose the output location.
       item.setSaveDialogOptions({
