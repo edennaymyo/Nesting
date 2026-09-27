@@ -25,7 +25,7 @@ function nameFor(value) {
 
 export function presetSnapshot({sheet,margins,gap,arrangeMode,repeatPattern,repeatAngle,rotation,graphtec}) {
   return { sheet:{...sheet}, margins:{...margins}, gap, arrangeMode, repeatPattern, repeatAngle, rotation,
-    registrationBox:{enabled:graphtec.enabled,linked:graphtec.linked,insets:{...graphtec.insets}} };
+    registrationBox:{enabled:graphtec.enabled,linked:graphtec.linked,centered:graphtec.centered===true,insets:{...graphtec.insets}} };
 }
 
 function validateSettings(settings) {

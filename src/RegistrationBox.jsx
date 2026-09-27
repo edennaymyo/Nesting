@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
-import { boxFromInsets, insetsFromBox, moveBox, reflectBox, validBox } from './registration-box.js';
+import { boxFromInsets, centeredRegistrationInsets, insetsFromBox, moveBox, reflectBox, registrationInsets, validBox } from './registration-box.js';
+import { DEFAULT_GRAPHTEC_MARK_TYPE, DEFAULT_REGISTRATION_OUTPUT_MODE, registrationMarkPolygons, registrationMarksFitSheet } from './registration-marks.js';
 
 export function PaperDimensions({ sheet, unit }) {
   const label = value => `${+(value / (unit === 'in' ? 25.4 : 1)).toFixed(3)} ${unit}`;
@@ -13,11 +14,13 @@ export function PaperDimensions({ sheet, unit }) {
 export function RegistrationBoxOverlay({ sheet, margins, settings, onChange, side, disabled }) {
   const [draft, setDraft] = useState(null);
   const drag = useRef(null);
-  const frontBox = boxFromInsets(sheet, settings.linked ? margins : settings.insets);
+  const frontBox = boxFromInsets(sheet, registrationInsets(sheet, margins, settings));
   const box = draft || (side === 'back' ? reflectBox(sheet, frontBox) : frontBox);
   const editable = !settings.locked && side !== 'back' && !disabled;
   if (!settings.enabled || !validBox(sheet, box)) return null;
-  const commit = next => onChange(value => ({ ...value, linked: false, insets: insetsFromBox(sheet, next) }));
+  const showMarks = ['marks', 'both'].includes(settings.outputMode || DEFAULT_REGISTRATION_OUTPUT_MODE);
+  const marks = showMarks ? registrationMarkPolygons(box, settings.type || DEFAULT_GRAPHTEC_MARK_TYPE, settings.size || 5, settings.stroke || 1) : [];
+  const commit = next => onChange(value => ({ ...value, linked: false, centered: false, insets: insetsFromBox(sheet, next) }));
   const finish = event => {
     if (!drag.current) return;
     if (event.type !== 'pointercancel') commit(drag.current.next);
@@ -46,10 +49,13 @@ export function RegistrationBoxOverlay({ sheet, margins, settings, onChange, sid
     commit(moveBox(sheet, box, handle, delta[0] * step, delta[1] * step));
   };
   const handlers = handle => ({ onPointerDown: e => start(e, handle), onPointerMove: move, onPointerUp: finish, onPointerCancel: finish, onKeyDown: e => key(e, handle) });
-  return <div className={`registration-box ${editable ? 'editable' : ''}`} data-side={side} style={{ left: `${box.x / sheet.w * 100}%`, top: `${box.y / sheet.h * 100}%`, width: `${box.w / sheet.w * 100}%`, height: `${box.h / sheet.h * 100}%` }}>
+  return <>
+    {showMarks && <svg className="registration-mark-preview" viewBox={`0 0 ${sheet.w} ${sheet.h}`} preserveAspectRatio="none" aria-label={`Graphtec Type ${(settings.type || DEFAULT_GRAPHTEC_MARK_TYPE) === 'type2' ? '2' : '1'} registration marks`}><g fill="#111">{marks.map((polygon, index) => <polygon key={index} points={polygon.map(([x, y]) => `${x},${y}`).join(' ')} />)}</g></svg>}
+    <div className={`registration-box ${editable ? 'editable' : ''}`} data-side={side} style={{ left: `${box.x / sheet.w * 100}%`, top: `${box.y / sheet.h * 100}%`, width: `${box.w / sheet.w * 100}%`, height: `${box.h / sheet.h * 100}%` }}>
     <button type="button" className="box-move" aria-label="Move registration box" disabled={!editable} {...handlers('move')}>REGISTRATION BOX{side === 'back' ? ' · REFLECTED' : editable ? ' · DRAG' : ' · LOCKED'}</button>
     {editable && <><div className="box-drag-area" {...handlers('move')} />{['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'].map(handle => <button key={handle} type="button" className={`box-handle handle-${handle}`} aria-label={`Resize registration box ${handle}`} {...handlers(handle)} />)}</>}
-  </div>;
+    </div>
+  </>;
 }
 
 function BoxField({ name, value, unit, disabled, onCommit }) {
@@ -61,21 +67,27 @@ function BoxField({ name, value, unit, disabled, onCommit }) {
 
 export function RegistrationBoxControls({ sheet, margins, settings, onChange, unit, side, disabled }) {
   const [error, setError] = useState('');
-  const box = boxFromInsets(sheet, settings.linked ? margins : settings.insets);
+  const box = boxFromInsets(sheet, registrationInsets(sheet, margins, settings));
   const valid = validBox(sheet, box);
+  const marksRequested = ['marks', 'both'].includes(settings.outputMode || DEFAULT_REGISTRATION_OUTPUT_MODE);
+  const markError = marksRequested && !registrationMarksFitSheet(sheet, box, settings.type || DEFAULT_GRAPHTEC_MARK_TYPE, settings.size || 5, settings.stroke || 1);
   const editField = (key, value) => {
     const next = { ...box, [key]: value };
     if (!validBox(sheet, next)) { setError('Box must fit inside the paper with width and height of at least 1 mm.'); return; }
     setError('');
-    onChange(current => ({ ...current, linked: false, insets: insetsFromBox(sheet, next) }));
+    onChange(current => ({ ...current, linked: false, centered: false, insets: insetsFromBox(sheet, next) }));
   };
-  return <section className="registration-settings" aria-label="Registration box settings">
-    <div className="graphtec-head"><div><h4>REGISTRATION BOX</h4><small>Illustrator / Cutting Master</small></div><button type="button" className={`toggle ${settings.enabled ? 'active' : ''}`} aria-label="Toggle registration box" aria-pressed={settings.enabled} disabled={disabled} onClick={() => onChange(v => ({ ...v, enabled: !v.enabled }))}><i /></button></div>
-    {settings.enabled && <><div className="box-actions"><button type="button" disabled={disabled || side === 'back'} aria-pressed={!settings.locked} onClick={() => onChange(v => ({ ...v, locked: !v.locked }))}>{settings.locked ? 'Edit box' : 'Lock box'}</button><button type="button" disabled={disabled || side === 'back'} onClick={() => { setError(''); onChange(v => ({ ...v, linked: true })); }}>Reset to margins</button></div>
+  const outputMode = settings.outputMode || DEFAULT_REGISTRATION_OUTPUT_MODE;
+  const setSetting = (key, value) => onChange(current => ({ ...current, [key]: value }));
+  return <section className="registration-settings" aria-label="Registration box and mark settings">
+    <div className="graphtec-head"><div><h4>REGISTRATION</h4><small>Editable box · Illustrator / Cutting Master</small></div><button type="button" className={`toggle ${settings.enabled ? 'active' : ''}`} aria-label="Toggle registration guides" aria-pressed={settings.enabled} disabled={disabled} onClick={() => onChange(v => ({ ...v, enabled: !v.enabled }))}><i /></button></div>
+    {settings.enabled && <><div className="box-actions"><button type="button" disabled={disabled || side === 'back'} aria-pressed={!settings.locked} onClick={() => onChange(v => ({ ...v, locked: !v.locked }))}>{settings.locked ? 'Edit box' : 'Lock box'}</button><button type="button" disabled={disabled || side === 'back'} onClick={() => { setError(''); onChange(v => ({ ...v, linked: false, centered: true, insets: centeredRegistrationInsets(sheet, margins) })); }}>Reset &amp; center</button></div>
+      <label className="registration-output">PDF output<select aria-label="Registration PDF output" value={outputMode} disabled={disabled} onChange={event => setSetting('outputMode', event.target.value)}><option value="box">Box only</option><option value="marks">Reg marks only</option><option value="both">Both</option></select></label>
+      {['marks', 'both'].includes(outputMode) && <><div className="registration-type" role="group" aria-label="Graphtec mark type"><span>Graphtec mark</span><button type="button" className={(settings.type || DEFAULT_GRAPHTEC_MARK_TYPE) === 'type1' ? 'active' : ''} aria-pressed={(settings.type || DEFAULT_GRAPHTEC_MARK_TYPE) === 'type1'} disabled={disabled} onClick={() => setSetting('type', 'type1')}>Type 1</button><button type="button" className={(settings.type || DEFAULT_GRAPHTEC_MARK_TYPE) === 'type2' ? 'active' : ''} aria-pressed={(settings.type || DEFAULT_GRAPHTEC_MARK_TYPE) === 'type2'} disabled={disabled} onClick={() => setSetting('type', 'type2')}>Type 2</button></div><div className="mark-dimensions"><BoxField name="Mark length" value={settings.size || 5} unit="mm" disabled={disabled} onCommit={value => setSetting('size', Math.max(5, Math.min(20, value)))} /><BoxField name="Line thickness" value={settings.stroke || 1} unit="mm" disabled={disabled} onCommit={value => setSetting('stroke', Math.max(.3, Math.min(1, value)))} /></div><p>Each corner exports as one closed, filled L-shaped vector. PDF visibility groups may open inside Illustrator’s single “Layer 1”; Illustrator-native layers need to be created in Illustrator.</p></>}
       <div className="box-numbers">{[['x', 'X'], ['y', 'Y'], ['w', 'Width'], ['h', 'Height']].map(([key, name]) => <BoxField key={`${key}-${unit}`} name={name} value={box[key]} unit={unit} disabled={disabled || settings.locked || side === 'back'} onCommit={value => editField(key, value)} />)}</div>
-      <p>{side === 'back' ? 'Back box follows the reflected Front box. Edit on Front.' : `${settings.linked ? 'Linked to margins.' : 'Custom box.'} X / Y are measured from the Front paper’s top-left.`}</p>
-      <p>Reference only — not a cut path or machine-readable ARMS mark. Convert the rectangle in Cutting Master before printing. Check mark clearance there.</p>
-      {(!valid || error) && <p className="box-error" role="alert">{error || 'Box does not fit the current paper. Reset to margins or adjust its values.'}</p>}
+      <p>{side === 'back' ? 'Back box follows the reflected Front box. Edit on Front.' : `${settings.linked ? 'Linked to margins.' : settings.centered ? 'Centered on margin box.' : 'Custom box.'} X / Y are measured from the Front paper’s top-left.`}</p>
+      {outputMode !== 'marks' && <p>The rectangle stays editable as a placement guide. Choose Box only, Reg marks only, or Both for PDF output.</p>}
+      {(!valid || error || markError) && <p className="box-error" role="alert">{error || (markError ? 'Marks would extend beyond the paper or exceed a box edge. Move or resize the box.' : 'Box does not fit the current paper. Reset to margins or adjust its values.')}</p>}
     </>}
   </section>;
 }

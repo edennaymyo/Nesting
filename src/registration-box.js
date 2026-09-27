@@ -1,11 +1,33 @@
 import { rgb } from 'pdf-lib';
 
+export const DEFAULT_REGISTRATION_BOX_MM = Object.freeze({
+  width: 12.6 * 25.4,
+  height: 16.5 * 25.4,
+});
+
 // All geometry is in millimetres from the full sheet's top-left, not artwork bounds.
 export function boxFromInsets(sheet, insets) {
   return { x: insets.left, y: insets.top, w: sheet.w - insets.left - insets.right, h: sheet.h - insets.top - insets.bottom };
 }
 export function insetsFromBox(sheet, box) {
   return { left: box.x, top: box.y, right: sheet.w - box.x - box.w, bottom: sheet.h - box.y - box.h };
+}
+export function centeredRegistrationBox(sheet, margins, size = DEFAULT_REGISTRATION_BOX_MM) {
+  const w = Math.min(size.width, sheet.w);
+  const h = Math.min(size.height, sheet.h);
+  const marginCenterX = (margins.left + sheet.w - margins.right) / 2;
+  const marginCenterY = (margins.top + sheet.h - margins.bottom) / 2;
+  const x = clamp(marginCenterX - w / 2, 0, sheet.w - w);
+  const y = clamp(marginCenterY - h / 2, 0, sheet.h - h);
+  return { x, y, w, h };
+}
+export function centeredRegistrationInsets(sheet, margins, size = DEFAULT_REGISTRATION_BOX_MM) {
+  return insetsFromBox(sheet, centeredRegistrationBox(sheet, margins, size));
+}
+export function registrationInsets(sheet, margins, settings) {
+  if (settings.linked) return margins;
+  if (settings.centered) return centeredRegistrationInsets(sheet, margins);
+  return settings.insets;
 }
 export function reflectBox(sheet, box) {
   return { ...box, x: sheet.w - box.x - box.w };

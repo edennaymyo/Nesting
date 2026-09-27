@@ -1,11 +1,39 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { PDFDocument, decodePDFRawStream } from 'pdf-lib';
-import { boxFromInsets, insetsFromBox, reflectBox, validBox, moveBox, drawRegistrationBox } from '../src/registration-box.js';
+import { boxFromInsets, centeredRegistrationBox, centeredRegistrationInsets, DEFAULT_REGISTRATION_BOX_MM, insetsFromBox, reflectBox, registrationInsets, validBox, moveBox, drawRegistrationBox } from '../src/registration-box.js';
 
 const sheet = { w: 330.2, h: 482.6 };
 const box = { x: 12.7, y: 25.4, w: 280, h: 400 };
 const near = (a, b) => assert.ok(Math.abs(a - b) < 1e-8, `${a} != ${b}`);
+test('default box is 12.6 by 16.5 inches and centered on the margin box', () => {
+  const margins = { top: 0.9 * 25.4, right: 0.5 * 25.4, bottom: 0.5 * 25.4, left: 0.5 * 25.4 };
+  const centered = centeredRegistrationBox(sheet, margins);
+  const fromInsets = boxFromInsets(sheet, centeredRegistrationInsets(sheet, margins));
+  near(centered.w, DEFAULT_REGISTRATION_BOX_MM.width);
+  near(centered.h, DEFAULT_REGISTRATION_BOX_MM.height);
+  near(centered.x / 25.4, 0.2);
+  near(centered.y / 25.4, 1.45);
+  near(centered.x + centered.w / 2, (margins.left + sheet.w - margins.right) / 2);
+  near(centered.y + centered.h / 2, (margins.top + sheet.h - margins.bottom) / 2);
+  assert.deepEqual(fromInsets, centered);
+});
+test('centered default is clamped to smaller paper instead of becoming invalid', () => {
+  const smallSheet = { w: 300, h: 400 };
+  const centered = centeredRegistrationBox(smallSheet, { top: 10, right: 10, bottom: 10, left: 10 });
+  assert.deepEqual(centered, { x: 0, y: 0, w: 300, h: 400 });
+  assert.ok(validBox(smallSheet, centered));
+});
+test('centered mode follows margin changes until the box is customized', () => {
+  const initial = { top: 20, right: 10, bottom: 10, left: 10 };
+  const changed = { ...initial, left: 15 };
+  const settings = { linked: false, centered: true, insets: { top: 1, right: 1, bottom: 1, left: 1 } };
+  const before = boxFromInsets(sheet, registrationInsets(sheet, initial, settings));
+  const after = boxFromInsets(sheet, registrationInsets(sheet, changed, settings));
+  assert.ok(after.x > before.x);
+  near(after.x + after.w / 2, (changed.left + sheet.w - changed.right) / 2);
+  assert.deepEqual(registrationInsets(sheet, changed, { ...settings, centered: false }), settings.insets);
+});
 test('insets and full-sheet horizontal reflection preserve dimensions', () => {
   const roundTrip = boxFromInsets(sheet, insetsFromBox(sheet, box));
   for (const key of Object.keys(box)) near(roundTrip[key], box[key]);
