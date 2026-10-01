@@ -1,4 +1,5 @@
 import { PDFDict, PDFName, PDFOperator, PDFOperatorNames, PDFString } from 'pdf-lib';
+import { mediaSplitGuides } from './media-split.js';
 
 export const DEFAULT_GRAPHTEC_MARK_TYPE = 'type2';
 export const DEFAULT_REGISTRATION_OUTPUT_MODE = 'marks';
@@ -125,4 +126,15 @@ export function drawRegistrationBoxInLayer(pdf, page, sheet, box, layer) {
   const w = box.w * PT_PER_MM;
   const h = box.h * PT_PER_MM;
   addLayerStream(pdf, page, layer, `0.85 0.45 0 RG\n0.5 w\n${x.toFixed(4)} ${y.toFixed(4)} ${w.toFixed(4)} ${h.toFixed(4)} re S`);
+}
+
+export function drawMediaSplitGuidesInLayer(pdf, page, sheet, split, layer, margins) {
+  const guides = mediaSplitGuides(sheet, split, margins), height = sheet.h * PT_PER_MM;
+  const commands = ['0.2 0.62 0.78 RG', '0.5 w', '[4 3] 0 d'];
+  for (const { position, start, end } of guides.vertical) commands.push(`${(position * PT_PER_MM).toFixed(4)} ${(height - end * PT_PER_MM).toFixed(4)} m ${(position * PT_PER_MM).toFixed(4)} ${(height - start * PT_PER_MM).toFixed(4)} l S`);
+  for (const { position, start, end } of guides.horizontal) {
+    const pdfY = height - position * PT_PER_MM;
+    commands.push(`${(start * PT_PER_MM).toFixed(4)} ${pdfY.toFixed(4)} m ${(end * PT_PER_MM).toFixed(4)} ${pdfY.toFixed(4)} l S`);
+  }
+  if (guides.vertical.length || guides.horizontal.length) addLayerStream(pdf, page, layer, commands.join('\n'));
 }

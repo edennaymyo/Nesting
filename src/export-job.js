@@ -32,7 +32,8 @@ export function buildExportFileName(settings) {
   return `${buildExportBaseName(settings)}.pdf`;
 }
 
-export function drawExportFileName(page, sheet, fileName, font) {
+export function drawExportFileName(page, sheet, fileName, font, includeLabel = true) {
+  if (!includeLabel) return;
   const pt = 72 / 25.4;
   const size = 7;
   const top = 5 * pt;

@@ -21,8 +21,17 @@ test('default box is 12.6 by 16.5 inches and centered on the margin box', () => 
 test('centered default is clamped to smaller paper instead of becoming invalid', () => {
   const smallSheet = { w: 300, h: 400 };
   const centered = centeredRegistrationBox(smallSheet, { top: 10, right: 10, bottom: 10, left: 10 });
-  assert.deepEqual(centered, { x: 0, y: 0, w: 300, h: 400 });
+  assert.deepEqual(centered, { x: 0.5, y: 0.5, w: 299, h: 399 });
   assert.ok(validBox(smallSheet, centered));
+});
+
+test('centered marks keep their half-stroke clearance inside short Epson landscape paper', () => {
+  const sheet = { w: 48 * 25.4, h: 12 * 25.4 };
+  const margins = { top: 0.9 * 25.4, right: 0.5 * 25.4, bottom: 0.5 * 25.4, left: 0.5 * 25.4 };
+  const box = centeredRegistrationBox(sheet, margins);
+  assert.ok(box.x >= 0.5 && box.y >= 0.5);
+  assert.ok(box.x + box.w <= sheet.w - 0.5);
+  assert.ok(box.y + box.h <= sheet.h - 0.5);
 });
 test('centered mode follows margin changes until the box is customized', () => {
   const initial = { top: 20, right: 10, bottom: 10, left: 10 };

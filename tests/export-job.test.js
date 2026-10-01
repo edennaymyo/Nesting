@@ -37,3 +37,12 @@ test('draws a safe filename label at 5 mm from the page top and left', async () 
   const [, encoded] = content.match(/<([0-9A-F]+)> Tj/);
   assert.equal(Buffer.from(encoded, 'hex').toString(), 'S07779-PP Gloss-5 sheets.pdf');
 });
+
+test('download filename can stay in metadata/name only without printing a label on the sheet', async () => {
+  const pdf = await PDFDocument.create();
+  const page = pdf.addPage([330.2 * 72 / 25.4, 482.6 * 72 / 25.4]);
+  const font = await pdf.embedFont(StandardFonts.Helvetica);
+  drawExportFileName(page, { w: 330.2, h: 482.6 }, 'S07779-PP Gloss-5 sheets.pdf', font, false);
+  assert.equal(page.node.Contents(), undefined);
+  assert.equal(buildExportFileName({ sourceName: 'S07779-OP.pdf', media: 'PP Gloss', sheets: 5 }), 'S07779-PP Gloss-5 sheets.pdf');
+});

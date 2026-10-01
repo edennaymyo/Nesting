@@ -26,10 +26,16 @@ test('duplicate names and protected names never overwrite existing presets',()=>
   const saved={First:settings,Other:settings};
   assert.throws(()=>changePresets(saved,{type:'create',name:'First',settings}),/already exists/);
   assert.throws(()=>changePresets(saved,{type:'rename',name:'First',newName:'Other'}),/already exists/);
-  for(const name of ['13 × 19 in','12.4 × 18.4 in','Custom','__proto__','constructor','prototype']){
+  for(const name of ['13 × 19 in','12.4 × 18.4 in','Custom','custom','49x24.5','59x25.1','__epson_custom_size__','__proto__','constructor','prototype']){
     for(const type of ['create','update','delete'])assert.throws(()=>changePresets(saved,{type,name,settings}),/reserved/);
   }
   assert.throws(()=>changePresets(saved,{type:'create',name:'   ',settings}),/name/);
+});
+test('Epson snapshots retain printer and selected stock size for isolated media presets',()=>{
+  const mediaSplit={enabled:true,panelW:598.5,panelH:317.5,clearance:6.35};
+  const epson=presetSnapshot({sheet:{w:1498.6,h:638.04},margins:{top:6.35,right:6.35,bottom:6.35,left:6.35},gap:2,arrangeMode:'contour',repeatPattern:'grid',repeatAngle:0,rotation:true,showGuides:false,graphtec:{enabled:true,linked:false,insets:{top:10,right:10,bottom:10,left:10}},printer:'epson',mediaSize:'59x25.1',mediaSplit});
+  assert.equal(epson.printer,'epson');assert.equal(epson.mediaSize,'59x25.1');assert.deepEqual(epson.sheet,{w:1498.6,h:638.04});assert.deepEqual(epson.mediaSplit,mediaSplit);assert.equal(epson.gap,2);assert.equal(epson.showGuides,false);
+  const store=memory();persistPresetChange(store,{type:'create',name:'Epson roll',settings:epson});const loaded=readPresets(store)['Epson roll'];assert.deepEqual(loaded.mediaSplit,mediaSplit);assert.equal(loaded.gap,2);assert.equal(loaded.showGuides,false);
 });
 test('malformed storage and invalid settings cannot silently replace stored data',()=>{
   for(const raw of ['null','[]','{broken','{"bad":null}']){

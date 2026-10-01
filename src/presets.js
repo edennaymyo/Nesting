@@ -19,12 +19,12 @@ export function initialPresetState() {
 function nameFor(value) {
   const name=String(value||'').trim();
   if (!name || name.length>80) throw new Error('Enter a preset name between 1 and 80 characters.');
-  if (owns(BUILTIN_PRESETS,name) || ['Custom','__proto__','constructor','prototype'].includes(name)) throw new Error('This name is reserved. Choose another name.');
+  if (owns(BUILTIN_PRESETS,name) || ['Custom','custom','49x24.5','59x25.1','__epson_custom_size__','__proto__','constructor','prototype'].includes(name)) throw new Error('This name is reserved. Choose another name.');
   return name;
 }
 
-export function presetSnapshot({sheet,margins,gap,arrangeMode,repeatPattern,repeatAngle,rotation,graphtec}) {
-  return { sheet:{...sheet}, margins:{...margins}, gap, arrangeMode, repeatPattern, repeatAngle, rotation,
+export function presetSnapshot({sheet,margins,gap,arrangeMode,repeatPattern,repeatAngle,rotation,showGuides=true,graphtec,printer='konica',mediaSize,mediaSplit}) {
+  return { sheet:{...sheet}, margins:{...margins}, gap, arrangeMode, repeatPattern, repeatAngle, rotation, showGuides, printer, ...(printer==='epson'?{mediaSize,mediaSplit:mediaSplit?{...mediaSplit}:undefined}:{}),
     registrationBox:{enabled:graphtec.enabled,linked:graphtec.linked,centered:graphtec.centered===true,insets:{...graphtec.insets}} };
 }
 
@@ -33,6 +33,11 @@ function validateSettings(settings) {
   const m=settings.margins;
   if (!record(m) || !['top','right','bottom','left'].every(side=>Number.isFinite(m[side])&&m[side]>=0) || m.left+m.right>=settings.sheet.w || m.top+m.bottom>=settings.sheet.h) throw new Error('Margins must leave usable paper space.');
   if (!Number.isFinite(settings.gap)||settings.gap<0||settings.gap>7.62) throw new Error('Cut gap must be between 0 and 0.3 in (7.62 mm).');
+  if (settings.mediaSplit!==undefined) {
+    const split=settings.mediaSplit;
+    const validPanelSize=value=>value==null||(Number.isFinite(value)&&value>0);
+    if (!record(split)||typeof split.enabled!=='boolean'||!Number.isFinite(split.clearance)||split.clearance<0||!validPanelSize(split.panelW)||!validPanelSize(split.panelH)) throw new Error('Media split settings are invalid.');
+  }
 }
 
 export function changePresets(saved, action) {

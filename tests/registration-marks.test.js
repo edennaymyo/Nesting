@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { decodePDFRawStream, PDFArray, PDFDict, PDFDocument, PDFName, PDFString } from 'pdf-lib';
-import { attachRegistrationMetadata, createOptionalContentLayers, DEFAULT_GRAPHTEC_MARK_TYPE, DEFAULT_REGISTRATION_OUTPUT_MODE, drawRegistrationBoxInLayer, drawRegistrationMarksInLayer, registrationMarkLayerName, registrationMarkPolygons, registrationMarksFitSheet, wrapPageInOptionalLayer } from '../src/registration-marks.js';
+import { attachRegistrationMetadata, createOptionalContentLayers, DEFAULT_GRAPHTEC_MARK_TYPE, DEFAULT_REGISTRATION_OUTPUT_MODE, drawMediaSplitGuidesInLayer, drawRegistrationBoxInLayer, drawRegistrationMarksInLayer, registrationMarkLayerName, registrationMarkPolygons, registrationMarksFitSheet, wrapPageInOptionalLayer } from '../src/registration-marks.js';
 
 const box = { x: 20, y: 30, w: 200, h: 300 };
 const sheet = { w: 330.2, h: 482.6 };
@@ -15,6 +15,7 @@ test('default registration export uses Graphtec Type 2 marks only', () => {
 test('Graphtec layer names match the tested Illustrator/Cutting Master syntax', () => {
   assert.equal(registrationMarkLayerName('type1', 1, 5), 'reg_1 1 0 25.00 1.00 5.00 100.00 1 0 2 0 0.00');
   assert.equal(registrationMarkLayerName('type2', 1, 5), 'reg_1 2 0 25.00 1.00 5.00 100.00 1 0 2 0 0.00');
+  assert.equal(registrationMarkLayerName('type2', 1, 10), 'reg_1 2 0 25.00 1.00 10.00 100.00 1 0 2 0 0.00');
 });
 
 test('each Graphtec corner is one closed, filled L-shaped vector with centered thickness', () => {
@@ -32,6 +33,23 @@ test('registration mark polygons stay within the paper', () => {
   assert.equal(registrationMarksFitSheet(sheet, box, 'type1', 5, 1), true);
   assert.equal(registrationMarksFitSheet(sheet, { ...box, x: 4 }, 'type1', 5, 1), false);
   assert.equal(registrationMarksFitSheet(sheet, { ...box, x: 0 }, 'type2', 5, 1), false);
+});
+
+test('media split guides export as separate dashed vector content', async () => {
+  const pdf = await PDFDocument.create();
+  const [layer] = Object.values(createOptionalContentLayers(pdf, [{ id: 'mediaSplit', name: 'media_split_guides' }])).map(value => value);
+  const page = pdf.addPage([sheet.w * 72 / 25.4, sheet.h * 72 / 25.4]);
+  drawMediaSplitGuidesInLayer(pdf, page, sheet, { panelW: sheet.w / 3, panelH: sheet.h / 2 }, layer, { top: 0, right: 0, bottom: 0, left: 0 });
+  const loaded = await PDFDocument.load(await pdf.save());
+  const resources = loaded.getPage(0).node.Resources();
+  const properties = resources.lookup(PDFName.of('Properties'), PDFDict);
+  assert.ok(properties.has(PDFName.of('Layer_mediaSplit')));
+  const content = loaded.getPage(0).node.Contents();
+  const streams = content instanceof PDFArray ? content.asArray() : [content];
+  const decoded = streams.map(ref => Buffer.from(decodePDFRawStream(loaded.context.lookup(ref)).decode()).toString()).join('\n');
+  assert.match(decoded, /\/OC \/Layer_mediaSplit BDC/);
+  assert.match(decoded, /\[4 3\] 0 d/);
+  assert.equal((decoded.match(/ l S/g) || []).length, 3);
 });
 
 test('PDF output contains separate named optional-content layers on both page content and marks', async () => {

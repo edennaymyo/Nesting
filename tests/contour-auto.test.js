@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { contourRings, filledArea, cutUsage, placedShape, shapesConflict, validateLayout, betterLayout } from '../src/contour-geometry.js';
-import { compactAndFill, selectBestCandidates } from '../src/contour-auto.js';
+import { compactAndFill, runContourAuto, selectBestCandidates } from '../src/contour-auto.js';
 import { repeatGeometry, packPattern } from '../src/packing-legacy.js';
 import { circle, rectangle, concave } from './packing-fixtures.js';
 const item = (art, x=0, y=0, angle=0) => ({ ...repeatGeometry(art, angle), x, y, i: 0 });
@@ -64,6 +64,19 @@ test('Step & Repeat rectangular placement regression stays unchanged', () => {
   assert.equal(packPattern(rectangle,100,sheet,2,'staggered',0).length,8);
   assert.equal(packPattern(rectangle,100,sheet,2,'brick',0).length,8);
   assert.equal(packPattern(rectangle,7,sheet,2,'grid',180).length,7);
+});
+
+test('Contour Auto checks each integer degree and reports its angle progress', async () => {
+  const angles = [];
+  const result = await runContourAuto(rectangle, 30, { w: 40, h: 30 }, 2, true, {
+    includeHoneycomb: false,
+    skipLegacy: true,
+    budgetMs: 0,
+    onProgress: message => { const match = message.match(/^Testing cut angle · (\d+)°$/); if (match) angles.push(Number(match[1])); },
+  });
+  assert.deepEqual(angles, Array.from({ length: 360 }, (_, angle) => angle));
+  assert.ok(result.items.length > 0);
+  assert.ok(result.items.every(item => Number.isInteger(item.angle)));
 });
 
 test('cardinal-angle floating point contact is not an overlapping cut', () => {
