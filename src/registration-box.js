@@ -13,12 +13,13 @@ export function insetsFromBox(sheet, box) {
   return { left: box.x, top: box.y, right: sheet.w - box.x - box.w, bottom: sheet.h - box.y - box.h };
 }
 export function centeredRegistrationBox(sheet, margins, size = DEFAULT_REGISTRATION_BOX_MM) {
-  const w = Math.min(size.width, sheet.w);
-  const h = Math.min(size.height, sheet.h);
+  const edgeClearance = 0.5; // Keep the centered registration-mark stroke inside the paper edge.
+  const w = Math.min(size.width, sheet.w - edgeClearance * 2);
+  const h = Math.min(size.height, sheet.h - edgeClearance * 2);
   const marginCenterX = (margins.left + sheet.w - margins.right) / 2;
   const marginCenterY = (margins.top + sheet.h - margins.bottom) / 2;
-  const x = clamp(marginCenterX - w / 2, 0, sheet.w - w);
-  const y = clamp(marginCenterY - h / 2, 0, sheet.h - h);
+  const x = clamp(marginCenterX - w / 2, edgeClearance, sheet.w - w - edgeClearance);
+  const y = clamp(marginCenterY - h / 2, edgeClearance, sheet.h - h - edgeClearance);
   return { x, y, w, h };
 }
 export function centeredRegistrationInsets(sheet, margins, size = DEFAULT_REGISTRATION_BOX_MM) {

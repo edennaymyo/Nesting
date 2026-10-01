@@ -105,22 +105,47 @@ export function buildIllustratorLayerScript(options = {}) {
     }
     return score;
   }
+  function isCutLineSpot(color) {
+    try { return !!color && color.typename === 'SpotColor' && color.spot && String(color.spot.name).replace(/^\s+|\s+$/g, '').toLowerCase() === 'cut line'; }
+    catch (ignored) { return false; }
+  }
+  function hasCutLineSpot(item) {
+    var paths = item.typename === 'CompoundPathItem' ? item.pathItems : [item];
+    for (var p = 0; p < paths.length; p++) {
+      var path = paths[p];
+      if ((path.stroked && isCutLineSpot(path.strokeColor)) || (path.filled && isCutLineSpot(path.fillColor))) return true;
+    }
+    return false;
+  }
+  function collectCutLines() {
+    var result = [], i, item;
+    for (i = 0; i < doc.compoundPathItems.length; i++) {
+      item = doc.compoundPathItems[i];
+      if (hasCutLineSpot(item) && (!item.layer || item.layer.name !== 'Cut Line')) result.push(item);
+    }
+    for (i = 0; i < doc.pathItems.length; i++) {
+      item = doc.pathItems[i];
+      if (item.parent.typename === 'CompoundPathItem') continue;
+      if (hasCutLineSpot(item) && (!item.layer || item.layer.name !== 'Cut Line')) result.push(item);
+    }
+    return result;
+  }
   function collectCandidates() {
     var result = [], i, item;
     for (i = 0; i < doc.compoundPathItems.length; i++) {
       item = doc.compoundPathItems[i];
-      if (!item.locked && !item.hidden && !alreadyOrganized(item)) result.push(item);
+      if (!item.locked && !item.hidden && !alreadyOrganized(item) && !hasCutLineSpot(item)) result.push(item);
     }
     for (i = 0; i < doc.pathItems.length; i++) {
       item = doc.pathItems[i];
-      if (item.parent.typename === 'CompoundPathItem' || item.locked || item.hidden || item.clipping || alreadyOrganized(item)) continue;
+      if (item.parent.typename === 'CompoundPathItem' || item.locked || item.hidden || item.clipping || alreadyOrganized(item) || hasCutLineSpot(item)) continue;
       result.push(item);
     }
     return result;
   }
   function alreadyOrganized(item) {
     var name = item.layer ? item.layer.name : '';
-    return name === config.markLayer || name === 'registration_box';
+    return name === config.markLayer || name === 'registration_box' || name === 'Cut Line';
   }
   var candidates = collectCandidates();
   function alreadyUsed(used, item) {
@@ -160,11 +185,23 @@ export function buildIllustratorLayerScript(options = {}) {
     alert('Could not identify all registration vector objects. No layers were changed. Open the matching exported PDF directly, without scaling it.');
     return;
   }
+  var cutLines = collectCutLines();
   function findOrCreateLayer(name) {
     for (var j = 0; j < doc.layers.length; j++) if (doc.layers[j].name === name) return doc.layers[j];
     var layer = doc.layers.add();
     layer.name = name;
     return layer;
+  }
+  function moveUnlocked(item, layer) {
+    var sourceLayer = item.layer, wasLocked = item.locked, sourceWasLocked = sourceLayer ? sourceLayer.locked : false;
+    try {
+      if (sourceLayer) sourceLayer.locked = false;
+      item.locked = false;
+      item.move(layer, ElementPlacement.PLACEATBEGINNING);
+    } finally {
+      try { item.locked = wasLocked; } catch (ignored) {}
+      try { if (sourceLayer) sourceLayer.locked = sourceWasLocked; } catch (ignored) {}
+    }
   }
   if (doc.layers.length === 1 && doc.layers[0].name === 'Layer 1') doc.layers[0].name = 'print';
   if (matched.box) {
@@ -177,8 +214,18 @@ export function buildIllustratorLayerScript(options = {}) {
       matched.marks[k].move(markLayer, ElementPlacement.PLACEATBEGINNING);
     }
   }
+  if (cutLines.length) {
+    var cutLayer = findOrCreateLayer('Cut Line');
+    for (var c = 0; c < cutLines.length; c++) moveUnlocked(cutLines[c], cutLayer);
+  }
+  var printLayer = null;
+  for (var p = 0; p < doc.layers.length; p++) if (doc.layers[p].name === 'print') printLayer = doc.layers[p];
+  if (printLayer) printLayer.zOrder(ZOrderMethod.SENDTOBACK);
+  if (cutLayer) cutLayer.zOrder(ZOrderMethod.BRINGTOFRONT);
+  if (boxLayer) boxLayer.zOrder(ZOrderMethod.BRINGTOFRONT);
+  if (markLayer) markLayer.zOrder(ZOrderMethod.BRINGTOFRONT);
   app.redraw();
-  alert('Registration objects moved to native Illustrator layers. Inspect the Layers panel, then Save As an .ai file.');
+  alert('Cut Line vectors' + (cutLines.length ? ' (' + cutLines.length + ')' : '') + ' and registration objects moved to native Illustrator layers. Inspect the Layers panel, then Save As an .ai file.');
 }());
 `;
 }

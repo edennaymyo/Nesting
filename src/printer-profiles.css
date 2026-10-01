@@ -1,0 +1,124 @@
+.printer-control{display:grid;gap:5px;color:#8e999b;font:600 10px 'DM Sans';letter-spacing:.35px}
+.printer-control select,.epson-media-control select{width:100%;height:34px;padding:0 9px;border:1px solid #46575b;border-radius:5px;background:#20292c;color:#edf3f1;font:600 11px 'DM Sans';letter-spacing:0}
+.design-size-readonly input{cursor:default;color:#aeb9ba;background:#192224}
+.printer-control select:focus-visible,.epson-media-control select:focus-visible{outline:2px solid #43d7ac;outline-offset:2px}
+
+/* Epson is a roll workflow: reserve the upper canvas for a wide, readable sheet,
+   and put the controls in a single horizontal workbench underneath it. */
+body.printer-epson .app{height:100dvh;min-height:0;grid-template-rows:48px 0 minmax(0,1fr) 34px}
+body.printer-epson header{width:100%;height:48px;min-width:0;padding:0 20px;justify-content:flex-start}
+body.printer-epson .reset-all{margin-left:10px}
+body.printer-epson .duplex-panel .duplex-mode{display:none}
+body.printer-epson nav{display:none}
+body.printer-epson .content{grid-row:3;height:auto;grid-template-columns:220px minmax(0,1fr);grid-template-rows:minmax(0,1fr) 274px;min-height:0}
+body.printer-epson .canvas{grid-column:1/-1;grid-row:1;padding:36px 28px 38px;min-width:0;min-height:0}
+body.printer-epson .canvas-label{top:9px;left:18px}
+body.printer-epson .canvas-label,body.printer-epson .notice{display:none}
+body.printer-epson .sheet{width:min(100%,calc((100dvh - 412px)*var(--ratio)))!important;max-height:calc(100dvh - 412px)!important}
+body.printer-epson .left{grid-column:1;grid-row:2;display:block;overflow:auto;min-height:0;padding:12px;border-top:1px solid #30383c;border-right:1px solid #30383c}
+body.printer-epson header .printer-control{position:absolute;z-index:20;top:8px;right:20px;display:flex;align-items:center;gap:8px;width:min(250px,42vw);height:32px;grid-column:auto;padding:0;color:#9ba7a9;font-size:10px;white-space:nowrap}
+body.printer-epson header .printer-control select{flex:1;min-width:0;height:32px}
+body.printer-epson .left h3{margin:4px 0 6px}
+body.printer-epson .left .file{padding:4px 2px}
+body.printer-epson .left .sample{margin-top:5px;padding:7px}
+body.printer-epson .right{grid-column:2;grid-row:2;display:flex;align-items:stretch;gap:0;overflow-x:auto!important;overflow-y:hidden!important;padding:8px 8px 10px!important;border-top:1px solid #30383c;border-left:0;scrollbar-width:thin}
+body.printer-epson .right>h3{display:none!important}
+body.printer-epson .right>.result{display:none!important}
+body.printer-epson .right>section{display:block!important;flex:0 0 172px;min-width:0;min-height:0;height:100%;overflow-x:hidden;overflow-y:auto;padding:7px 10px!important;border:0;border-right:1px solid #30383c;scrollbar-width:thin;scrollbar-color:#526166 #1e2729}
+body.printer-epson .right>section h4{margin-bottom:7px}
+body.printer-epson .right>section label{margin:5px 0;font-size:10px}
+body.printer-epson .right>section input{width:67px;height:27px;font-size:11px}
+body.printer-epson .right .sheet-setup{flex-basis:230px}
+body.printer-epson .sheet-setup>.preset-host{display:block!important;margin:0 0 12px;padding:0 0 11px;border-bottom:1px solid #303b3e}
+body.printer-epson .sheet-setup>.preset-host .preset-controls{grid-template-columns:minmax(0,1fr) auto;gap:7px}
+body.printer-epson .sheet-setup>.preset-host .preset-controls>label{grid-column:1/-1;margin:0;font-size:10px;font-weight:700;letter-spacing:.35px;color:#c2cdce}
+body.printer-epson .sheet-setup>.preset-host .preset-controls select{height:34px;min-width:0;width:100%;font-size:11px}
+body.printer-epson .sheet-setup>.preset-host .preset-controls button{min-height:34px;white-space:nowrap}
+body.printer-epson .sheet-setup>.preset-host .preset-feedback{margin:7px 0 2px}
+body.printer-epson .sheet-setup>.epson-media-control{display:none!important}
+body.printer-epson .sheet-setup>label.custom-paper-field{display:grid!important;grid-template-columns:minmax(0,1fr) 67px 16px;align-items:center;gap:5px}
+body.printer-epson .sheet-setup>label.custom-paper-field input{width:67px;min-width:0;height:27px}
+body.printer-epson .right>.registration-settings{flex:0 0 258px}
+body.printer-epson .registration-settings .mark-dimensions label{grid-template-columns:minmax(0,1fr) 54px 14px!important}
+body.printer-epson .registration-settings .mark-dimensions input{width:54px!important}
+body.printer-epson .right>.start{position:sticky;right:0;align-self:center;flex:0 0 158px;width:158px;height:48px;margin:0 10px;box-shadow:none}
+body.printer-epson .right>.action-dock{position:sticky;right:0;align-self:center;display:flex;flex:0 0 215px;width:215px;flex-direction:column;gap:7px;margin:0 8px;padding:0;background:transparent}
+body.printer-epson .right .action-dock .export-pdf{position:relative;inset:auto;width:100%;height:42px;margin:0;box-shadow:none}
+body.printer-epson .right::-webkit-scrollbar{height:6px}
+body.printer-epson .right::-webkit-scrollbar-track{background:#1e2729}
+body.printer-epson .right::-webkit-scrollbar-thumb{border-radius:6px;background:#526166}
+body.printer-epson .right>section::-webkit-scrollbar{width:5px}
+body.printer-epson .right>section::-webkit-scrollbar-thumb{border-radius:5px;background:#526166}
+body.printer-epson footer{grid-row:4;height:32px;padding:0 14px;gap:18px;font-size:10px}
+
+@media(max-height:760px){
+  body.printer-epson .content{grid-template-rows:minmax(0,1fr) 246px}
+  body.printer-epson .canvas{padding-top:30px;padding-bottom:30px}
+  body.printer-epson .sheet{width:min(100%,calc((100dvh - 384px)*var(--ratio)))!important;max-height:calc(100dvh - 384px)!important}
+}
+@media(max-width:900px){
+  body.printer-epson .content{grid-template-columns:180px minmax(0,1fr);grid-template-rows:minmax(0,1fr) 254px}
+  body.printer-epson .left{display:block}
+  body.printer-epson .right{display:flex}
+  body.printer-epson header .printer-control{right:12px;width:min(230px,44vw)}
+  body.printer-epson .canvas{padding-left:16px;padding-right:16px}
+}
+@media(max-width:620px){
+  body.printer-epson .content{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) 208px}
+  body.printer-epson .left{display:none}
+  body.printer-epson header .printer-control{right:10px;width:min(210px,52vw)}
+  body.printer-epson .right{grid-column:1;grid-row:2}
+  body.printer-epson .canvas{padding:52px 12px 30px}
+  body.printer-epson .sheet{width:min(100%,calc((100dvh - 294px)*var(--ratio)))!important;max-height:calc(100dvh - 294px)!important}
+  body.printer-epson header{padding:0 14px}
+}
+
+/* Keep Epson's artwork actions and file facts in one quiet, compact group. */
+body.printer-epson .left h3{display:none}
+body.printer-epson .left .sidebar-tools{display:grid;gap:7px;margin:0;padding:10px 10px 0;border:1px solid #303c3f;border-bottom:0;border-radius:8px 8px 0 0;background:#151c1e}
+body.printer-epson .left .sidebar-tools:before{content:'DESIGN';color:#9ba7a9;font-size:9px;font-weight:700;letter-spacing:.7px}
+body.printer-epson .left .sidebar-import{height:34px;border-radius:5px;font-size:11px}
+body.printer-epson .left .file,body.printer-epson .left>.empty-list{margin:0;padding:8px 10px;border:1px solid #303c3f;border-top:0;border-bottom:0;background:#151c1e}
+body.printer-epson .left .file{gap:8px}
+body.printer-epson .left .file>i{width:26px;height:26px;flex:none}
+body.printer-epson .left .file div{gap:3px}
+body.printer-epson .left .file b{font-size:11px}
+body.printer-epson .left .file small{font-size:9px;white-space:normal;line-height:1.4}
+body.printer-epson .left .file .design-status{color:#829193}
+body.printer-epson .left>.duplex-panel{margin:0;padding:2px 10px 0!important;border-right:1px solid #303c3f;border-left:1px solid #303c3f;background:#151c1e}
+body.printer-epson .left .font-status{margin:4px 0 0;padding:6px;font-size:9px}
+body.printer-epson .left .sample{height:31px;min-height:31px;margin:0;padding:0 10px;text-align:left;border:1px solid #303c3f;border-top:0;border-radius:0 0 8px 8px;background:#151c1e;color:#43d7a0;font-size:10px}
+body.printer-epson .right>.workbench-summary{flex-basis:218px;grid-template-columns:minmax(0,1fr);align-content:start;gap:11px;padding:12px!important}
+body.printer-epson .right>.workbench-summary .quantity-summary{padding-bottom:10px;border-bottom:1px solid #303b3e}
+body.printer-epson .right>.workbench-summary .quantity-mode{height:32px}
+
+/* Epson workbench: three readable cards, with media and split controls together. */
+body.printer-epson .content{grid-template-rows:minmax(0,1fr) 300px}
+body.printer-epson .canvas{padding-top:34px;padding-bottom:34px}
+body.printer-epson .sheet{width:min(100%,calc((100dvh - 438px)*var(--ratio)))!important;max-height:calc(100dvh - 438px)!important}
+body.printer-epson header .header-controls{position:fixed;top:8px;right:18px;display:flex;width:auto;height:32px;gap:12px;padding:0;background:transparent}
+body.printer-epson header .printer-control{position:static;display:flex;flex-direction:row;align-items:center;gap:8px;width:238px;height:32px;padding:0;color:#9ba7a9;font-size:10px;white-space:nowrap}
+body.printer-epson .right{gap:8px;padding:8px 12px 10px!important}
+body.printer-epson .right>section{height:100%;border:1px solid #303c3f;border-radius:6px;background:#151c1e;padding:10px 12px!important}
+body.printer-epson .right>.workbench-summary{flex:0 0 250px;grid-template-columns:minmax(82px,.7fr) minmax(120px,1fr);align-content:start;gap:9px 8px;overflow-y:auto}
+body.printer-epson .right>.sheet-setup{display:block!important;flex:0 0 350px;overflow-x:hidden;overflow-y:auto}
+body.printer-epson .sheet-setup>.media-split-settings{display:block!important;margin-top:10px;padding:9px 0 0!important;border-top:1px solid #303b3e;border-right:0;overflow:visible}
+body.printer-epson .right>.registration-settings{flex:0 0 224px;overflow-x:hidden;overflow-y:auto}
+body.printer-epson .right>.start{flex:0 0 132px;width:132px;margin:0 4px}
+body.printer-epson .right>.action-dock{flex:0 0 168px;width:168px;margin:0 4px}
+body.printer-epson .right>section::-webkit-scrollbar{width:5px}
+body.printer-epson .right>section::-webkit-scrollbar-thumb{border-radius:5px;background:#465457}
+@media(max-height:760px){
+  body.printer-epson .content{grid-template-rows:minmax(0,1fr) 250px}
+  body.printer-epson .sheet{width:min(100%,calc((100dvh - 388px)*var(--ratio)))!important;max-height:calc(100dvh - 388px)!important}
+}
+@media(max-width:900px){
+  body.printer-epson .content{grid-template-rows:minmax(0,1fr) 260px}
+  body.printer-epson .right{grid-column:2;grid-row:2}
+}
+@media(max-width:620px){
+  body.printer-epson .content{grid-template-rows:minmax(0,1fr) 220px}
+  body.printer-epson .right{grid-column:1;grid-row:2}
+  body.printer-epson .right>.workbench-summary{flex-basis:236px;grid-template-columns:minmax(72px,.65fr) minmax(112px,1fr)}
+  body.printer-epson .right>.sheet-setup{flex-basis:320px}
+}

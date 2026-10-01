@@ -1,0 +1,495 @@
+.media-split-settings{padding:7px 10px!important;min-width:0}
+.media-split-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.media-split-heading h4{margin:0!important}
+.media-split-settings .media-split-dimensions{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.media-split-settings label{display:grid;gap:4px;margin:6px 0;color:#aeb8b9;font-size:10px}
+.media-split-settings input{width:100%!important;height:27px!important;min-width:0;border:1px solid #3e4a4e;border-radius:4px;background:#20282a;color:#f3f6f5;padding:0 7px;font:600 11px 'DM Sans';font-variant-numeric:tabular-nums}
+.media-split-settings input:focus-visible{outline:2px solid #43d7ac;outline-offset:2px}
+.media-split-dimension>span{display:flex;align-items:center;gap:4px}
+.media-split-dimension i{font-style:normal;color:#788487;font-size:9px}
+.media-split-counts{display:grid;grid-template-columns:1fr 1fr 26px;align-items:end;column-gap:6px;margin:8px 0;padding:7px 8px;border-radius:4px;background:#1a2626;color:#9ba8a9;font-size:9px}
+.media-split-counts label{display:grid;gap:3px;margin:0;color:#9ba8a9;font-size:9px}
+.media-split-counts input{height:25px!important;text-align:center;padding:0 4px}
+.media-split-counts button{width:26px;height:25px;display:grid;place-items:center;border:1px solid #405052;border-radius:4px;background:#202a2b;color:#aeb9b8;cursor:pointer}
+.media-split-counts button:hover:not(:disabled){border-color:#3ad99e;color:#3ad99e}
+.media-split-counts button:disabled{opacity:.45;cursor:not-allowed}
+.media-split-counts small{grid-column:1/-1;color:#38d99d;font-size:9px}
+.media-split-clearance{grid-template-columns:minmax(0,1fr) 58px 17px;align-items:center;gap:5px}
+.media-split-remainder{display:grid;grid-template-columns:1fr auto;gap:3px;margin:8px 0;color:#aeb8b9;font-size:10px}
+.media-split-remainder b{color:#e5b769;font-variant-numeric:tabular-nums;white-space:nowrap}
+.media-split-remainder small{grid-column:1/-1;color:#879496;font-size:9px}
+.media-split-remainder .media-split-remainder-detail{color:#aab6b4;line-height:1.35}
+.media-split-help{display:block;color:#899597;font-size:9px;line-height:1.4}
+.printer-epson .right>.media-split-settings{flex:0 0 188px;min-height:0;height:100%;overflow:auto;border-right:1px solid #303c3f}
+.bed .media-split-overlay{position:absolute;z-index:25;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;touch-action:none}
+.media-split-panel-outline{fill:transparent;stroke:#087f99;stroke-opacity:.72;stroke-width:1.35;stroke-dasharray:6 4;vector-effect:non-scaling-stroke}
+.media-split-panel-badge{fill:#e8fbff;fill-opacity:.92;stroke:#087f99;stroke-width:.7;vector-effect:non-scaling-stroke}
+.media-split-panel-label{fill:#07586a;font:700 4px 'DM Sans',sans-serif;letter-spacing:.2px;pointer-events:none}
+.media-split-leftover-area{fill:#e7a53a;fill-opacity:.09;stroke:#e7a53a;stroke-opacity:.7;stroke-width:1;stroke-dasharray:4 3;vector-effect:non-scaling-stroke}
+.media-split-leftover-label{fill:#9c6a18;fill-opacity:.85;font:600 8px 'DM Sans',sans-serif;letter-spacing:1px;text-anchor:middle;dominant-baseline:middle;pointer-events:none}
+.media-split-visible-line{stroke:#087f99;stroke-width:1.7;stroke-dasharray:6 4;vector-effect:non-scaling-stroke;pointer-events:none}
+.media-split-hit-area{stroke:transparent;stroke-width:12;vector-effect:non-scaling-stroke;pointer-events:stroke;cursor:ew-resize}
+.media-split-guide-y .media-split-hit-area{cursor:ns-resize}
+.media-split-guide:hover .media-split-visible-line{stroke:#12c989;stroke-width:2.2}
+.piece-leftover{outline:1px solid #e7a53a!important}
+.piece-leftover em{background:#a97624!important}
+@media(max-width:1100px){.printer-epson .right>.media-split-settings{flex-basis:170px}}
+.sheet-setup>.media-split-settings{flex:0 0 auto!important;min-height:0;height:auto!important;overflow:visible!important;border-right:0!important}
+.sheet-setup>.media-split-settings .media-split-heading{margin-bottom:7px}
+.sheet-setup>.media-split-settings .media-split-dimensions{grid-template-columns:repeat(2,minmax(0,1fr))}
+.sheet-setup>.media-split-settings .media-split-remainder{margin:6px 0}
+.sheet-setup>.media-split-settings .media-split-help{margin-top:5px}
+.printer-epson .sheet-setup>.media-split-settings .media-split-counts{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 28px}
+
+/* Epson media split is one grouped panel, with aligned fields and usable targets. */
+body.printer-epson .sheet-setup>.media-split-settings{
+ margin-top:14px;padding:12px!important;border:1px solid #303c3f!important;border-radius:8px;background:#111819
+}
+body.printer-epson .sheet-setup>.media-split-settings .media-split-heading{
+ min-height:34px;margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid #2c373a
+}
+body.printer-epson .sheet-setup>.media-split-settings .media-split-heading h4{margin:0!important;line-height:1.2}
+body.printer-epson .sheet-setup>.media-split-settings .media-split-dimensions{gap:10px}
+body.printer-epson .sheet-setup>.media-split-settings .media-split-dimension{min-width:0;gap:6px;margin:0;color:#aeb8b9;font-size:10px}
+body.printer-epson .sheet-setup>.media-split-settings .media-split-dimension>span{min-width:0;gap:5px}
+body.printer-epson .sheet-setup>.media-split-settings input{height:36px!important;min-width:0;border:1px solid #46575b;border-radius:6px;background:#20292c;color:#edf3f1;padding:0 9px;font:600 11px 'DM Sans';font-variant-numeric:tabular-nums}
+body.printer-epson .sheet-setup>.media-split-settings .media-split-dimension input{width:100%!important}
+body.printer-epson .sheet-setup>.media-split-settings .media-split-dimension i{flex:0 0 auto;color:#8c999b;font-size:10px}
+body.printer-epson .sheet-setup>.media-split-settings .media-split-counts{
+ grid-template-columns:minmax(0,1fr) minmax(0,1fr) 36px;align-items:end;gap:8px;margin:12px 0;padding:10px;border:1px solid #2c393c;border-radius:7px;background:#172021
+}
+body.printer-epson .sheet-setup>.media-split-settings .media-split-counts label{min-width:0;gap:6px;margin:0;color:#aeb8b9;font-size:10px}
+body.printer-epson .sheet-setup>.media-split-settings .media-split-counts input{width:100%!important;height:36px!important;text-align:center;padding:0 7px}
+body.printer-epson .sheet-setup>.media-split-settings .media-split-counts button{width:36px;height:36px;border-radius:6px}
+body.printer-epson .sheet-setup>.media-split-settings .media-split-counts small{grid-column:1/-1;padding-top:2px;font-size:10px}
+body.printer-epson .sheet-setup>.media-split-settings .media-split-clearance{grid-template-columns:minmax(0,1fr) 72px 18px;gap:7px;margin:11px 0;color:#aeb8b9;font-size:10px}
+body.printer-epson .sheet-setup>.media-split-settings .media-split-clearance input{width:72px!important;text-align:right}
+body.printer-epson .sheet-setup>.media-split-settings .media-split-remainder{margin:11px 0;padding:9px 10px;border-radius:6px;background:#1b2526;font-size:10px}
+body.printer-epson .sheet-setup>.media-split-settings .media-split-remainder b{color:#f0c26c;font-variant-numeric:tabular-nums}
+body.printer-epson .sheet-setup>.media-split-settings .media-split-help{margin-top:8px;line-height:1.5}
+body.printer-epson .toggle{width:40px;height:24px;min-width:40px;padding:3px}
+body.printer-epson .toggle i{width:18px;height:18px}
+body.printer-epson .toggle.active i{transform:translateX(16px)}
+body.printer-epson .margin-controls{padding:10px;border:1px solid #303c3f;border-radius:7px;background:#111819}
+body.printer-epson .margin-controls .margin-header{margin-bottom:2px}
+body.printer-epson .margin-controls.collapsed{padding:9px 10px}
+body.printer-epson .margin-controls .reset-icon{width:32px;height:32px}
+body.printer-epson .margin-controls .guide-toggle{height:32px;padding:0 10px}
+body.printer-epson .registration-settings .registration-type select,
+body.printer-epson .registration-settings .registration-output select{width:100%;height:36px!important}
+body.printer-epson .registration-settings .mark-dimensions input{width:64px!important;height:36px!important}
+body.printer-epson .registration-settings .mark-dimensions label{grid-template-columns:minmax(0,1fr) 64px 18px!important}
+body.printer-epson .right>.workbench-summary{padding:16px 12px!important;overflow:visible!important}
+
+/* Konica gets a real full-width toolbar row so global controls never cover sidebar content. */
+body:not(.printer-epson) .app{grid-template-rows:58px minmax(0,1fr) 32px}
+body:not(.printer-epson) header{position:relative;grid-row:1;grid-column:1/-1;left:auto;top:auto;width:100%;height:58px;padding:0 18px;z-index:30;background:#141a1b;border-bottom:1px solid #2f393c}
+body:not(.printer-epson) .header-controls{position:absolute;top:10px;right:18px;max-width:calc(100vw - 292px)}
+body:not(.printer-epson) .content{grid-row:2;height:auto;min-height:0}
+body:not(.printer-epson) footer{grid-row:3;height:32px}
+@media(max-width:520px){body:not(.printer-epson) header{height:50px;padding:0 12px}}
+
+/* Keep Konica's upload, design facts, quantity and nesting controls together. */
+body:not(.printer-epson) .left{padding-top:14px;overflow-x:hidden;overflow-y:auto}
+body:not(.printer-epson) .left>.workbench-summary{display:grid!important;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:12px 9px;margin:12px 0 0;padding:11px!important;border:1px solid #344246;border-radius:7px;background:#141b1d}
+body:not(.printer-epson) .left>.workbench-summary .arrangement-host{grid-column:1/-1}
+body:not(.printer-epson) .left>.workbench-summary .arrangement-controls{gap:7px 6px}
+body:not(.printer-epson) .left>.workbench-summary .arrangement-mode-select{gap:5px;font-size:9px}
+body:not(.printer-epson) .left>.workbench-summary .arrangement-mode-select select{width:62%;padding:0 6px;font-size:10px}
+body:not(.printer-epson) .left>.workbench-summary .arrangement-controls>label:not(.arrangement-mode-select){grid-template-columns:minmax(0,1fr) 48px 12px!important;padding-right:66px!important;font-size:10px}
+body:not(.printer-epson) .left>.workbench-summary .arrangement-controls>label input{width:48px!important}
+body:not(.printer-epson) .left>.workbench-summary .gap-stepper{gap:3px}
+body:not(.printer-epson) .left>.workbench-summary .gap-stepper button{width:29px;height:30px}
+body:not(.printer-epson) .left>.workbench-summary select{min-width:0}
+body:not(.printer-epson) .right>h3{display:none}
+body:not(.printer-epson) .sheet-setup>h4{font-size:10px}
+body:not(.printer-epson) .left>.workbench-summary select{height:32px!important;padding:0 6px!important;font-size:10px!important}
+body:not(.printer-epson) .left>.workbench-summary input{height:30px!important;font-size:11px!important}
+
+/* Match Epson switches to the compact toggle size used elsewhere in the app. */
+body.printer-epson .toggle{width:32px;height:18px;min-width:32px;padding:2px}
+body.printer-epson .toggle i{width:14px;height:14px}
+body.printer-epson .toggle.active i{transform:translateX(14px)}
+
+/* One unified Epson setup card: design first, then quantity and nesting. */
+body.printer-epson .content{grid-template-columns:minmax(0,1fr)!important}
+body.printer-epson .left{display:none!important}
+body.printer-epson .right{grid-column:1!important;grid-row:2!important}
+body.printer-epson .right>.workbench-summary{display:grid!important;flex:0 0 420px!important;grid-template-columns:minmax(135px,.8fr) minmax(0,1.2fr);grid-template-rows:auto minmax(0,1fr);align-content:start;align-items:start;gap:0 13px;padding:11px 13px!important;overflow:hidden!important}
+body.printer-epson .setup-artwork{grid-column:1;grid-row:1/3;min-width:0;margin:0;padding:0 12px 0 0;border:0;border-right:1px solid #303b3e}
+body.printer-epson .setup-artwork-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px}
+body.printer-epson .setup-artwork-heading h4{margin:0!important}
+body.printer-epson .setup-artwork-heading .sidebar-import{height:27px;min-height:27px;padding:0 9px;border:1px solid #405052;border-radius:5px;background:#20292c;color:#dce5e3;font:600 10px 'DM Sans';cursor:pointer}
+body.printer-epson .setup-artwork .file,body.printer-epson .setup-artwork>.empty-list{display:flex;align-items:center;gap:8px;margin:0;padding:2px 0 0;border:0;background:transparent}
+body.printer-epson .setup-artwork .file>i{width:24px;height:24px;flex:none}
+body.printer-epson .setup-artwork .file>div{display:grid;min-width:0;gap:2px}
+body.printer-epson .setup-artwork .file b{overflow:hidden;font-size:10px;text-overflow:ellipsis;white-space:nowrap}
+body.printer-epson .setup-artwork .file small{overflow:hidden;color:#91a0a2;font-size:9px;line-height:1.3;text-overflow:ellipsis;white-space:nowrap}
+body.printer-epson .setup-artwork .file .design-status{color:#829193}
+body.printer-epson .setup-artwork .empty-list{font-size:10px}
+body.printer-epson .setup-artwork .font-status{margin:5px 0 0;padding:5px 7px;font-size:9px}
+body.printer-epson .setup-artwork .sample{width:auto;height:23px;min-height:23px;margin:5px 0 0;padding:0;border:0;background:transparent;color:#43d7a0;font-size:9px;text-align:left}
+body.printer-epson .setup-artwork .sample:hover{text-decoration:underline}
+body.printer-epson .setup-artwork .duplex-panel{margin:0;padding:0!important;border:0;background:transparent}
+body.printer-epson .right>.workbench-summary .quantity-summary{grid-column:2;grid-row:1;min-width:0;margin:0 0 8px;padding:0 0 8px;border-bottom:1px solid #303b3e}
+body.printer-epson .right>.workbench-summary .quantity-summary h4{margin-bottom:5px!important}
+body.printer-epson .right>.workbench-summary .quantity-mode{height:30px}
+body.printer-epson .right>.workbench-summary .quantity-note{margin-top:5px;font-size:10px}
+body.printer-epson .right>.workbench-summary .arrangement-host{grid-column:2;grid-row:2;min-width:0}
+body.printer-epson .right>.workbench-summary .arrangement-controls{gap:4px 8px;padding-top:0;border-top:0}
+body.printer-epson .right>.workbench-summary .arrangement-controls>h4{margin-bottom:1px!important}
+body.printer-epson .right>.workbench-summary .arrangement-mode-select select{height:31px}
+body.printer-epson .right>.workbench-summary .arrangement-controls>label:not(.arrangement-mode-select){grid-template-columns:minmax(0,1fr) 55px 16px!important;padding-right:70px!important}
+body.printer-epson .right>.workbench-summary .arrangement-controls>label input{height:30px!important}
+body.printer-epson .right>.workbench-summary .gap-stepper button{width:27px;height:27px}
+@media(max-width:620px){body.printer-epson .right>.workbench-summary{flex-basis:400px!important;grid-template-columns:minmax(125px,.8fr) minmax(0,1.2fr)}}
+
+/* Compact, consistent selectors and a clearer but restrained upload action. */
+.sidebar-import{height:36px!important;min-height:36px;border-color:#00b76a!important;background:#103326!important;color:#50e1a0!important;font-size:11px!important;font-weight:700!important;transition:background-color .16s,border-color .16s,box-shadow .16s}
+.sidebar-import:hover{border-color:#27df8b!important;background:#15432f!important;box-shadow:0 0 0 2px #00c87524}
+.sidebar-import:focus-visible{outline:2px solid #43d7ac;outline-offset:2px}
+body.printer-epson .setup-artwork-heading .sidebar-import{height:30px!important;min-height:30px;padding:0 10px;border-color:#00b76a!important;background:#103326!important;color:#50e1a0!important}
+body:not(.printer-epson) .left>.workbench-summary{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+body:not(.printer-epson) .left>.workbench-summary .quantity-mode{width:100%!important;max-width:100%;height:32px!important}
+body:not(.printer-epson) .left>.workbench-summary .arrangement-mode-select select{width:calc((100% - 9px)/2)!important;max-width:100%;height:32px!important}
+body.printer-epson .right>.workbench-summary .quantity-mode{width:160px!important;max-width:100%;height:31px!important}
+body.printer-epson .right>.workbench-summary .arrangement-mode-select select{width:160px!important;max-width:100%;height:31px!important}
+/* Align the frequent quantity and arrangement selectors to one shared right edge. */
+body.printer-epson .right>.workbench-summary .quantity-summary{display:grid;grid-template-columns:minmax(0,1fr) 160px;align-items:center;column-gap:10px}
+body.printer-epson .right>.workbench-summary .quantity-summary h4{grid-column:1;grid-row:1;margin:0!important}
+body.printer-epson .right>.workbench-summary .quantity-summary .quantity-mode{grid-column:2;grid-row:1;justify-self:end}
+body.printer-epson .right>.workbench-summary .quantity-summary .quantity-note,
+body.printer-epson .right>.workbench-summary .quantity-summary>label{grid-column:1/-1}
+body.printer-epson .right>.workbench-summary .arrangement-mode-select{width:100%;min-width:0}
+body.printer-epson .right>.workbench-summary .arrangement-mode-select select{margin-left:auto}
+/* The single Mark length field was inheriting a two-column wrapper, squeezing its label. */
+body.printer-epson .right>.registration-settings{flex:0 0 258px!important;min-width:258px}
+body.printer-epson .registration-settings .mark-dimensions{grid-template-columns:minmax(0,1fr)!important;min-width:0}
+body.printer-epson .registration-settings .mark-dimensions label{grid-template-columns:minmax(0,1fr) 64px 22px!important;align-items:center;min-width:0;white-space:nowrap}
+body.printer-epson .registration-settings .mark-dimensions label input{width:64px!important;justify-self:end;text-align:right}
+body.printer-epson .registration-settings .mark-dimensions label small{justify-self:start}
+/* Epson compact workbench: let the artwork card fit its content instead of stretching empty. */
+body.printer-epson .right>.workbench-summary{align-self:flex-start;height:max-content!important;grid-template-rows:max-content max-content!important;overflow:visible!important}
+body.printer-epson .right>.workbench-summary .setup-artwork{grid-row:1!important;align-self:start;height:max-content!important}
+/* Keep media size and margins at left, with the always-on split controls beside them. */
+body.printer-epson .right>.sheet-setup{display:grid!important;flex:0 0 400px!important;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);grid-template-rows:auto auto auto;align-content:start;align-self:flex-start;height:max-content!important;gap:8px 10px;overflow:visible!important}
+body.printer-epson .right>.sheet-setup>h4{grid-column:1/-1;grid-row:1;margin:0 0 1px!important}
+body.printer-epson .right>.sheet-setup>.preset-host{grid-column:1;grid-row:2;margin:0!important;padding:0 0 8px!important;border-bottom:1px solid #303b3e}
+body.printer-epson .right>.sheet-setup>.preset-host .preset-controls{grid-template-columns:minmax(0,1fr)!important;gap:6px}
+body.printer-epson .right>.sheet-setup>.preset-host .preset-controls>label{grid-column:1!important}
+body.printer-epson .right>.sheet-setup>.preset-host .preset-controls select,
+body.printer-epson .right>.sheet-setup>.preset-host .preset-controls button{width:100%;min-width:0;height:32px;min-height:32px}
+body.printer-epson .right>.sheet-setup>.preset-host .preset-controls button{padding:0 6px;font-size:10px}
+body.printer-epson .right>.sheet-setup>.preset-host .preset-feedback{line-height:1.35}
+body.printer-epson .right>.sheet-setup>.margin-controls{grid-column:1;grid-row:3;align-self:start;margin:0!important;padding:8px!important}
+body.printer-epson .right>.sheet-setup>.media-split-settings{grid-column:2;grid-row:2/4;align-self:stretch;min-width:0;margin:0!important;padding:8px!important;border:1px solid #303c3f!important;border-radius:7px;background:#111819}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-heading{min-height:26px;margin:0 0 8px;padding-bottom:6px}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-dimensions{gap:7px}
+body.printer-epson .right>.sheet-setup>.media-split-settings input{height:30px!important;padding:0 7px}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-counts{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 30px;gap:6px;margin:8px 0;padding:7px}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-counts input{height:30px!important}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-counts button{width:30px;height:30px}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-clearance{grid-template-columns:minmax(0,1fr) 58px 18px;gap:5px;margin:7px 0}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-clearance input{width:58px!important}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-remainder{gap:3px;margin:7px 0;padding:6px 7px}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-remainder-detail{line-height:1.25}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-help{margin-top:4px;line-height:1.3}
+/* Use the spare width for readable registration fields and keep the main action at the edge. */
+body.printer-epson .right>.registration-settings{flex:1 1 258px!important;max-width:340px;align-self:stretch;height:100%!important;overflow-x:hidden!important;overflow-y:auto!important}
+body.printer-epson .right>.start,body.printer-epson .right>.action-dock{margin-left:auto!important}
+body.printer-epson .content{grid-template-rows:minmax(0,1fr) 350px!important}
+body.printer-epson .sheet{width:min(100%,calc((100dvh - 488px)*var(--ratio)))!important;max-height:calc(100dvh - 488px)!important}
+body.printer-epson .right>.sheet-setup{align-self:stretch;height:100%!important;overflow-x:hidden!important;overflow-y:auto!important}
+@media(max-height:760px){body.printer-epson .content{grid-template-rows:minmax(0,1fr) 300px!important}body.printer-epson .sheet{width:min(100%,calc((100dvh - 438px)*var(--ratio)))!important;max-height:calc(100dvh - 438px)!important}}
+@media(max-width:900px){body.printer-epson .content{grid-template-rows:minmax(0,1fr) 330px!important}body.printer-epson .sheet-setup{flex-basis:380px!important;grid-template-columns:minmax(0,.78fr) minmax(0,1.22fr)}}
+@media(max-width:620px){body.printer-epson .content{grid-template-rows:minmax(0,1fr) 270px!important}body.printer-epson .right>.workbench-summary{flex-basis:400px!important}body.printer-epson .right>.sheet-setup{flex-basis:370px!important}}
+
+/* Epson's everyday workflow: one shallow workbench, with the primary action at
+   its lower-left and the paper/split/registration controls grouped beside it. */
+body.printer-epson .content{grid-template-rows:minmax(0,1fr) 270px!important}
+body.printer-epson .canvas{padding-top:30px;padding-bottom:30px}
+body.printer-epson .sheet{width:min(100%,calc((100dvh - 398px)*var(--ratio)))!important;max-height:calc(100dvh - 398px)!important}
+body.printer-epson .right{align-items:stretch;gap:8px;padding:7px 12px 8px!important;overflow-x:auto!important;overflow-y:hidden!important}
+body.printer-epson .right>.workbench-summary{flex:0 0 380px!important;display:grid!important;grid-template-columns:minmax(138px,.9fr) minmax(0,1.1fr)!important;grid-template-rows:max-content minmax(0,1fr)!important;align-content:start;align-items:start;align-self:stretch;height:100%!important;gap:8px 12px;padding:10px 12px!important;overflow:hidden!important}
+body.printer-epson .right>.workbench-summary{position:relative}
+body.printer-epson .right>.workbench-summary .setup-artwork{grid-column:1!important;grid-row:1!important;align-self:start;height:max-content!important;padding-right:10px}
+body.printer-epson .right>.workbench-summary .quantity-summary{grid-column:2!important;grid-row:1!important;margin:0 0 3px;padding:0 0 6px}
+body.printer-epson .right>.workbench-summary .quantity-summary{grid-template-columns:minmax(62px,.7fr) minmax(0,1.3fr)!important;column-gap:6px}
+body.printer-epson .right>.workbench-summary .quantity-summary .quantity-mode{width:100%;min-width:0;padding:0 7px}
+body.printer-epson .right>.workbench-summary .quantity-summary .quantity-mode{width:120px!important;justify-self:end}
+body.printer-epson .right>.workbench-summary .arrangement-mode-select select{width:120px!important;flex:0 0 120px;padding:0 7px}
+body.printer-epson .right>.workbench-summary .arrangement-host{grid-column:2!important;grid-row:2!important;align-self:start;position:relative;top:-76px}
+body.printer-epson .right>.workbench-summary .arrangement-controls{gap:4px 7px}
+body.printer-epson .right>.workbench-summary .arrangement-mode-select select{height:29px}
+body.printer-epson .right>.workbench-summary .arrangement-controls>label:not(.arrangement-mode-select){grid-template-columns:minmax(0,1fr) 54px 14px!important;padding-right:65px!important}
+body.printer-epson .right>.workbench-summary .arrangement-controls>label input{height:28px!important}
+body.printer-epson .right>.workbench-summary .gap-stepper{bottom:0}
+body.printer-epson .right>.workbench-summary .gap-stepper button{width:26px;height:26px}
+body.printer-epson .right>.workbench-summary .epson-design-size{grid-column:1!important;grid-row:2!important;align-self:stretch;display:flex;flex-direction:column;justify-content:center;min-width:0;margin:0 0 45px;padding:9px 10px 48px!important;border:1px solid #315547;border-left:3px solid #04c77a;border-radius:6px;background:linear-gradient(135deg,#1b2a28,#172120)}
+body.printer-epson .right>.workbench-summary .epson-design-size h4{margin:0 0 6px!important;color:#a8b9b3;font-size:9px;letter-spacing:.6px}
+body.printer-epson .right>.workbench-summary .epson-design-size p{margin:0;color:#f0f6f3;font-size:18px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums;white-space:nowrap}
+body.printer-epson .right>.workbench-summary .epson-design-size p small{color:#42dda0;font-size:11px;font-weight:700}
+body.printer-epson .right>.workbench-summary>.start{position:absolute!important;left:12px;bottom:10px;z-index:1;width:min(100%,160px)!important;height:38px!important;min-height:38px;margin:0!important;padding:0 10px!important;box-shadow:none!important;font-size:12px}
+body.printer-epson .right>.sheet-setup{display:grid!important;flex:0 0 clamp(550px,40vw,760px)!important;grid-template-columns:minmax(0,1fr) 270px!important;grid-template-rows:auto auto auto!important;align-content:start;align-self:stretch;height:100%!important;gap:6px 12px;padding:10px 11px!important;overflow:hidden!important}
+/* Let the paper controls absorb desktop width instead of leaving an empty rail. */
+body.printer-epson .right>.sheet-setup{flex:1 1 clamp(550px,40vw,760px)!important;max-width:1100px}
+/* Give the two frequent design actions more room, reclaiming it from paper setup. */
+body.printer-epson .right>.workbench-summary{flex-basis:410px!important;grid-template-columns:minmax(154px,.95fr) minmax(0,1.05fr)!important}
+body.printer-epson .right>.workbench-summary>.start{width:min(100%,180px)!important}
+body.printer-epson .right>.sheet-setup{flex-basis:520px!important;min-width:500px}
+body.printer-epson .right>.registration-settings{flex-basis:300px!important;min-width:300px}
+body.printer-epson .registration-settings .box-actions{gap:7px;margin:8px 0}
+body.printer-epson .registration-settings .box-actions button{min-height:32px;font-size:11px}
+body.printer-epson .registration-settings .box-actions button:first-child{border-color:#347a5a;background:#143529;color:#62e0a6;font-weight:700}
+body.printer-epson .registration-settings .box-actions button:first-child[aria-pressed="true"]{border-color:#00c875;background:#00a85f;color:#fff}
+
+/* Promote panel counts and cut gap in Epson's nesting hierarchy. */
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-counts{
+  margin:7px 0;padding:7px;border:1px solid #365448;border-radius:6px;
+  background:linear-gradient(135deg,#1b2a28,#172120);gap:6px
+}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-counts label{
+  gap:5px;color:#d2dfda;font-size:10px;font-weight:700
+}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-counts input{
+  height:34px!important;border-color:#36765b;background:#202d2c;color:#f4faf7;
+  font-size:13px;font-weight:700;text-align:center
+}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-counts input:focus-visible{
+  outline:2px solid #43d7a0;outline-offset:1px
+}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-counts button{
+  width:30px;height:30px;border-color:#365448;background:#1d2928;color:#b8c9c2
+}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-counts small{
+  display:block!important;grid-column:1/3;padding-top:0;color:#4bdda0;font-size:9px;font-weight:700
+}
+body.printer-epson .right>.workbench-summary .arrangement-controls>label:not(.arrangement-mode-select){
+  min-height:39px;margin-top:4px!important;padding:5px 70px 5px 8px!important;
+  border:1px solid #365448;border-radius:6px;
+  background:linear-gradient(135deg,#1b2a28,#172120);color:#e2ece7;font-size:11px;font-weight:700
+}
+body.printer-epson .right>.workbench-summary .arrangement-controls>label input{
+  height:31px!important;border-color:#36765b;background:#202d2c;color:#f4faf7;
+  font-size:13px!important;font-weight:700
+}
+body.printer-epson .right>.workbench-summary .arrangement-controls>label input:focus-visible{
+  outline:2px solid #43d7a0;outline-offset:1px
+}
+body.printer-epson .right>.workbench-summary .arrangement-controls>label:not(.arrangement-mode-select){
+  grid-template-columns:minmax(48px,1fr) 46px 12px!important;padding:4px 56px 4px 6px!important
+}
+body.printer-epson .right>.workbench-summary .arrangement-controls>label input{width:46px!important;padding:0 4px!important}
+body.printer-epson .right>.workbench-summary .gap-stepper{right:5px;bottom:5px;gap:3px}
+body.printer-epson .right>.workbench-summary .gap-stepper button{
+  width:23px;height:27px;border-color:#365448;border-radius:5px;background:#1d2928;color:#e7f2ed
+}
+body.printer-epson .right>.workbench-summary .gap-stepper button:hover:not(:disabled){
+  border-color:#00bd69;background:#10352a;color:#52e1a0
+}
+
+/* Nesting hierarchy: gap first, common arrangement next, rotation last. */
+.workbench-summary .quantity-note{display:flex;align-items:center;gap:6px;min-height:23px;color:#aeb8b9}
+.workbench-summary .quantity-note b{margin-left:auto;padding:3px 8px;border:1px solid #176846;border-radius:999px;background:#10352a;color:#5ce5a6;font-size:13px;font-weight:800;line-height:1.2;font-variant-numeric:tabular-nums}
+.workbench-summary .arrangement-controls>h4{order:0}
+.workbench-summary .arrangement-controls>label:not(.arrangement-mode-select){order:1}
+.workbench-summary .arrangement-controls>.arrangement-mode-select{order:2}
+.workbench-summary .arrangement-controls>.contour-options,
+.workbench-summary .arrangement-controls>.pattern-options{order:3}
+.workbench-summary .arrangement-controls>.gap-stepper{top:34px;right:0;bottom:auto}
+.workbench-summary .contour-options{grid-template-columns:minmax(0,1fr) auto}
+.workbench-summary .contour-options small{grid-column:1/-1;grid-row:1;order:0}
+.workbench-summary .contour-options>span{grid-column:1;grid-row:2;order:1}
+.workbench-summary .contour-options>.toggle{grid-column:2;grid-row:2;order:2;justify-self:end}
+body.printer-epson .right>.workbench-summary .arrangement-controls>.gap-stepper{top:34px;right:5px;bottom:auto}
+body.printer-epson .right>.sheet-setup>h4{grid-column:1/-1;grid-row:1;margin:0!important}
+body.printer-epson .right>.sheet-setup>.preset-host{grid-column:1!important;grid-row:2!important;align-self:start;margin:0!important;padding:0!important;border:0!important}
+body.printer-epson .right>.sheet-setup>.preset-host .preset-controls{grid-template-columns:minmax(0,1fr)!important;gap:5px}
+body.printer-epson .right>.sheet-setup>.preset-host .preset-controls>label{grid-column:1/-1!important}
+body.printer-epson .right>.sheet-setup>.preset-host .preset-controls select{min-width:0}
+body.printer-epson .right>.sheet-setup>.preset-host .preset-controls button{width:100%;min-width:0;height:27px;min-height:27px}
+body.printer-epson .right>.sheet-setup>.preset-host .preset-feedback{margin:5px 0 0;font-size:9px;line-height:1.3}
+body.printer-epson .right>.sheet-setup>.margin-controls{grid-column:1!important;grid-row:3!important;align-self:start;width:100%;max-width:420px;margin:0!important;padding:6px!important}
+body.printer-epson .right>.sheet-setup>.margin-controls>label{grid-template-columns:minmax(0,1fr) 58px 14px!important;gap:4px!important}
+body.printer-epson .right>.sheet-setup>.margin-controls input{width:58px!important;min-width:0;height:27px!important;padding:0 5px!important;font-size:10px!important}
+body.printer-epson .right>.sheet-setup>.margin-controls .margin-header{gap:4px}
+body.printer-epson .right>.sheet-setup>.margin-controls .margin-tools{gap:4px}
+body.printer-epson .right>.sheet-setup>.margin-controls .guide-toggle{height:27px;padding:0 6px;font-size:9px}
+body.printer-epson .right>.sheet-setup>.margin-controls .reset-icon{width:27px;height:27px}
+body.printer-epson .right>.sheet-setup>.media-split-settings{grid-column:2!important;grid-row:2/4!important;align-self:start!important;width:100%;max-width:270px;min-width:0;margin:0!important;padding:7px!important;border:1px solid #303c3f!important;border-radius:6px;background:#111819}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-heading{min-height:24px;margin:0 0 6px;padding-bottom:5px}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-dimensions{gap:6px}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-dimension{gap:4px;font-size:9px}
+body.printer-epson .right>.sheet-setup>.media-split-settings input{height:27px!important;padding:0 6px;font-size:10px}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-counts{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 27px;gap:4px;margin:4px 0;padding:4px}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-counts input{height:27px!important}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-counts button{width:27px;height:27px}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-counts small{display:none}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-clearance{grid-template-columns:minmax(0,1fr) 52px 15px;gap:4px;margin:4px 0;font-size:9px}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-clearance input{width:52px!important}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-remainder{gap:2px;margin:3px 0;padding:4px 5px;font-size:9px}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-remainder-detail{font-size:8px;line-height:1.2}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-help{margin-top:3px;font-size:8px;line-height:1.2}
+body.printer-epson .right>.sheet-setup>.media-split-settings .media-split-help{display:none}
+body.printer-epson .right>.registration-settings{flex:0 0 288px!important;min-width:288px;max-width:none;align-self:flex-start;height:max-content!important;max-height:100%;overflow:visible!important;padding:9px 10px!important}
+body.printer-epson .registration-settings .graphtec-head{gap:6px}
+body.printer-epson .registration-settings .graphtec-head small{font-size:9px;line-height:1.25}
+body.printer-epson .registration-settings .box-actions{gap:5px;margin:6px 0}
+body.printer-epson .registration-settings .box-actions button{min-height:28px;padding:0 7px;font-size:10px}
+body.printer-epson .registration-settings .registration-output{grid-template-columns:minmax(0,1fr) 126px;gap:6px;margin:6px 0!important;font-size:9px}
+body.printer-epson .registration-settings .registration-type{grid-template-columns:minmax(0,1fr) 126px;align-items:center;gap:6px;margin:6px 0;font-size:9px}
+body.printer-epson .registration-settings .registration-type span{grid-column:auto}
+body.printer-epson .registration-settings .registration-type select,
+body.printer-epson .registration-settings .registration-output select{height:28px!important;font-size:10px}
+body.printer-epson .registration-settings .mark-dimensions{grid-template-columns:minmax(0,1fr)!important;margin:4px 0}
+body.printer-epson .registration-settings .mark-dimensions label{grid-template-columns:minmax(0,1fr) 54px 18px!important;gap:4px!important;font-size:9px}
+body.printer-epson .registration-settings .mark-dimensions input{width:54px!important;height:28px!important}
+body.printer-epson .registration-settings p{margin:5px 0;font-size:8px;line-height:1.25}
+body.printer-epson .registration-settings p:not(.box-error){display:none!important}
+body.printer-epson .registration-settings .box-numbers{gap:4px 7px}
+body.printer-epson .registration-settings .box-numbers{grid-template-columns:repeat(4,minmax(0,1fr))}
+body.printer-epson .registration-settings .box-numbers label{grid-template-columns:minmax(0,1fr) 13px!important;grid-template-rows:auto auto;align-items:center;gap:2px;font-size:8px;white-space:nowrap}
+body.printer-epson .registration-settings .box-numbers input{grid-column:1;width:100%!important;height:26px!important;padding:0 4px;font-size:9px!important}
+body.printer-epson .registration-settings .box-numbers small{grid-column:2;grid-row:2;font-size:8px}
+body.printer-epson .right>.start,body.printer-epson .right>.action-dock{display:none!important}
+@media(max-height:760px){body.printer-epson .content{grid-template-rows:minmax(0,1fr) 240px!important}body.printer-epson .sheet{width:min(100%,calc((100dvh - 378px)*var(--ratio)))!important;max-height:calc(100dvh - 378px)!important}}
+@media(max-width:900px){body.printer-epson .content{grid-template-rows:minmax(0,1fr) 270px!important}body.printer-epson .right>.sheet-setup{flex-basis:550px!important}}
+@media(max-width:620px){body.printer-epson .content{grid-template-rows:minmax(0,1fr) 224px!important}body.printer-epson .right>.workbench-summary{flex-basis:400px!important}body.printer-epson .right>.sheet-setup{flex-basis:460px!important}}
+
+/* Epson paper setup: cap the wide stock selector and balance the work areas. */
+body.printer-epson .right>.sheet-setup{
+ flex:0 1 clamp(640px,38vw,760px)!important;
+ min-width:640px!important;
+ max-width:760px!important;
+ grid-template-columns:minmax(0,1fr) minmax(280px,300px)!important;
+ column-gap:16px!important;
+}
+body.printer-epson .right>.sheet-setup>.preset-host .preset-controls{
+ grid-template-columns:minmax(0,280px) max-content!important;
+ align-items:end;
+ gap:7px 8px!important;
+}
+body.printer-epson .right>.sheet-setup>.preset-host .preset-controls>label{
+ grid-column:1/-1!important;
+ margin:0!important;
+}
+body.printer-epson .right>.sheet-setup>.preset-host .preset-controls select{
+ grid-column:1;
+ width:100%!important;
+ max-width:280px;
+ height:34px!important;
+}
+body.printer-epson .right>.sheet-setup>.preset-host .preset-controls button{
+ grid-column:2;
+ width:auto!important;
+ min-width:108px;
+ height:34px!important;
+ min-height:34px!important;
+ padding:0 10px;
+ white-space:nowrap;
+}
+body.printer-epson .right>.sheet-setup>.preset-host .preset-feedback,
+body.printer-epson .right>.sheet-setup>.preset-host .preset-actions{
+ grid-column:1/-1;
+}
+@media(max-width:900px){
+body.printer-epson .right>.sheet-setup{flex:0 0 640px!important}
+}
+
+/* Konica is a portrait-sheet workflow: give its paper preview nearly all
+   available vertical canvas space while preserving a little room for rulers. */
+@media(min-width:901px){
+ body:not(.printer-epson) .canvas{padding:18px 62px 12px 46px}
+ body:not(.printer-epson) .sheet{
+  width:min(100%,calc((100dvh - 120px)*var(--ratio)))!important;
+  max-height:calc(100dvh - 120px)!important
+ }
+ body:not(.printer-epson) .paper-width{top:-10px}
+ body:not(.printer-epson) .paper-width:before,
+ body:not(.printer-epson) .paper-width:after{top:-4px;height:8px}
+ body:not(.printer-epson) .header-controls{gap:8px}
+ body:not(.printer-epson) .header-controls .printer-control{width:190px}
+}
+
+/* Keep the Konica preview below the app header, with its artwork title and
+   paper dimensions visible while using nearly all available canvas height. */
+@media(min-width:901px){
+ body:not(.printer-epson) .canvas{
+  margin-top:0;
+  height:100%;
+  padding:48px 54px 14px 26px
+ }
+ body:not(.printer-epson) .canvas>.notice{display:none!important}
+ body:not(.printer-epson) .sheet{
+  width:min(100%,calc((100dvh - 152px)*var(--ratio)))!important;
+  max-height:calc(100dvh - 152px)!important
+ }
+ body:not(.printer-epson) .paper-width{top:-12px}
+ body:not(.printer-epson) .paper-width span{top:-9px}
+}
+
+/* Konica desktop: give the design and primary action rails a little more room,
+   while keeping the central preview dominant and the paper preset compact. */
+@media(min-width:1051px){
+ body:not(.printer-epson) .content{
+  grid-template-columns:290px minmax(360px,1fr) 340px!important
+ }
+ body:not(.printer-epson) .sheet-setup .preset-host .preset-controls{
+  grid-template-columns:minmax(0,190px) max-content!important;
+  gap:7px 8px!important
+ }
+ body:not(.printer-epson) .sheet-setup .preset-host .preset-controls select{
+  width:100%!important;
+  max-width:190px!important
+ }
+}
+
+/* Epson media setup: prioritize the stock selector over the save action, and
+   keep the split controls compact without narrowing their numeric fields. */
+@media(min-width:901px){
+ body.printer-epson .right>.sheet-setup{
+  flex:0 1 530px!important;
+  min-width:520px!important;
+  max-width:620px!important;
+  grid-template-columns:minmax(0,1fr) minmax(210px,220px)!important;
+  column-gap:12px!important
+ }
+ body.printer-epson .right>.sheet-setup>.preset-host .preset-controls{
+  grid-template-columns:minmax(0,1fr) max-content!important;
+  gap:7px 8px!important
+ }
+ body.printer-epson .right>.sheet-setup>.preset-host .preset-controls select{
+  max-width:300px!important
+ }
+ body.printer-epson .right>.sheet-setup>.preset-host .preset-controls button{
+  min-width:82px!important;
+  padding-inline:7px!important
+ }
+}
+
+/* Keep custom stock dimensions together in the paper section and put margins
+   after media split, instead of leaving one size field stranded below it. */
+body.printer-epson .right>.sheet-setup{grid-template-rows:auto auto minmax(200px,auto) auto!important;overflow-x:hidden!important;overflow-y:auto!important;scrollbar-width:thin;scrollbar-color:#465457 transparent}
+body.printer-epson .right>.sheet-setup>.paper-dimensions-editor{
+ grid-column:1!important;grid-row:3!important;align-self:start;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;
+ padding:8px;border:1px solid #303c3f;border-radius:6px;background:#111819
+}
+body.printer-epson .right>.sheet-setup>.paper-dimensions-editor>label{
+ grid-template-columns:minmax(0,1fr) 58px 14px!important;gap:4px!important;font-size:9px!important
+}
+body.printer-epson .right>.sheet-setup>.paper-dimensions-editor input{height:27px!important;padding:0 5px!important;font-size:10px!important}
+body.printer-epson .right>.sheet-setup>.media-split-settings{grid-column:2!important;grid-row:2/4!important;align-self:stretch!important}
+body.printer-epson .right>.sheet-setup>.margin-controls{
+ grid-column:1/-1!important;grid-row:4!important;align-self:end!important;width:100%;max-width:none!important;margin:0!important
+}
+body.printer-epson .right>.sheet-setup>.margin-controls>label{grid-template-columns:minmax(0,1fr) 58px 14px!important;gap:4px!important}
+body.printer-epson .right>.sheet-setup:not(.custom-size-active)>.media-split-settings{grid-row:2/4!important}
+body.printer-epson .content:has(.sheet-setup.custom-size-active){grid-template-rows:minmax(0,1fr) 310px!important}
+@media(max-height:760px){body.printer-epson .content:has(.sheet-setup.custom-size-active){grid-template-rows:minmax(0,1fr) 280px!important}}
+
+/* Keep the occasional-use margin opener tucked beneath the stock selector. */
+.preset-host>.margin-controls,body.printer-epson .preset-host>.margin-controls{display:flex!important;grid-template-columns:none!important;align-items:center;gap:7px;width:max-content;max-width:100%;margin:3px 0 0!important;padding:0!important;border:0!important;background:transparent!important}
+.preset-host>.margin-controls>.margin-header,body.printer-epson .preset-host>.margin-controls>.margin-header{display:flex;width:max-content;max-width:100%;grid-column:auto;align-items:center;justify-content:flex-start;gap:6px;margin:0!important}
+.preset-host>.margin-controls .margin-toggle,body.printer-epson .preset-host>.margin-controls .margin-toggle{min-height:24px;padding:1px 7px;font-size:9px}
+.preset-host>.margin-controls .margin-tools,body.printer-epson .preset-host>.margin-controls .margin-tools{gap:5px}
+.preset-host>.margin-controls .guide-toggle,body.printer-epson .preset-host>.margin-controls .guide-toggle{height:24px;padding:0 7px;font-size:9px}

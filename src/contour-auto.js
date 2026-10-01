@@ -1,14 +1,24 @@
 import { validatedPatternPack, packContour, repeatGeometry } from './packing-legacy.js';
-import { contourRings, placedShape, placementWithinSheet, shapesConflict, validateLayout, betterLayout, filledArea } from './contour-geometry.js';
+import { contourRings, placedShape, placementWithinSheet, shapesConflict, validateLayout, betterLayout, filledArea, envelope } from './contour-geometry.js';
 
-const PATTERNS = ['grid', 'staggered', 'honeycomb', 'brick'];
+const PATTERNS = ['grid', 'staggered', 'brick'];
+const CARDINAL_ANGLES = [0, 90, 180, 270];
 const yieldUI = () => new Promise(resolve => setTimeout(resolve, 0));
 
-export function selectBestCandidates(candidates, rings, sheet, gap) {
-  let best = { items: [], method: 'empty', rejected: 0 };
-  for (const candidate of candidates) {
+export function selectBestCandidates(candidates, rings, sheet, gap, maxCandidates = 48) {
+  let best = { items: [], method: 'empty', rejected: 0 }, bestEnvelope = Infinity;
+  const ranked = [...candidates].sort((a, b) => b.items.length - a.items.length || envelope(a.items) - envelope(b.items)).slice(0, maxCandidates);
+  for (const candidate of ranked) {
+    const candidateEnvelope = envelope(candidate.items);
+    // Validation can only remove placements. Don't run the expensive exact
+    // polygon checks for candidates that cannot beat the current valid result.
+    if (candidate.items.length < best.items.length) continue;
+    if (candidate.items.length === best.items.length && candidateEnvelope >= bestEnvelope - 1e-6) continue;
     const checked = validateLayout(candidate.items, rings, sheet, gap);
-    if (betterLayout(checked.items, best.items)) best = { ...candidate, ...checked };
+    if (betterLayout(checked.items, best.items)) {
+      best = { ...candidate, ...checked };
+      bestEnvelope = envelope(best.items);
+    }
   }
   return best;
 }
@@ -77,21 +87,36 @@ export async function runContourAuto(art, target, sheet, gap, allowRotation, opt
   if (!rings) throw new Error('A valid closed Cut Line is required for Contour Auto.');
   if (![sheet.w, sheet.h, gap, target].every(Number.isFinite) || sheet.w <= 0 || sheet.h <= 0 || gap < 0 || target < 1) throw new Error('Paper margins leave no usable area or nesting settings are invalid.');
   const progress = options.onProgress || (() => {}), candidates = [];
-  const angles = allowRotation ? [0, 90, 180, 270] : [0];
-  for (const angle of angles) for (const pattern of PATTERNS) {
-    progress(`Comparing ${pattern} · ${angle}°`); await yieldUI();
-    candidates.push({ method: `${pattern} ${angle}° baseline`, items: validatedPatternPack(art, target, sheet, gap, pattern, angle) });
+  const rotationStep = Math.max(1, Math.min(90, Math.floor(Number(options.rotationStep) || 1)));
+  const angles = allowRotation ? Array.from({ length: Math.ceil(360 / rotationStep) }, (_, index) => index * rotationStep) : [0];
+  for (const angle of angles) {
+    progress(`Testing cut angle · ${angle}°`); await yieldUI();
+    for (const pattern of PATTERNS) candidates.push({ angle, method: `${pattern} ${angle}° baseline`, items: validatedPatternPack(art, target, sheet, gap, pattern, angle) });
+  }
+  if (allowRotation && options.includeHoneycomb !== false) for (const angle of CARDINAL_ANGLES) {
+    progress(`Comparing honeycomb · ${angle}°`); await yieldUI();
+    candidates.push({ angle, method: `honeycomb ${angle}° baseline`, items: validatedPatternPack(art, target, sheet, gap, 'honeycomb', angle) });
   }
   progress('Validating baseline cut gaps and margins'); await yieldUI();
   const baseline = selectBestCandidates(candidates, rings, sheet, gap);
-  progress('Searching contour placements'); await yieldUI();
-  // Keep Phase 2A as another candidate, never let it replace a better valid baseline.
-  const finalists = [baseline];
-  if (!options.skipLegacy && baseline.items.length < target) finalists.push({ method: 'contour search', items: packContour(art, target, sheet, gap, allowRotation) });
-  let best = selectBestCandidates(finalists, rings, sheet, gap);
+  // The baseline is already vector-validated. Do not validate it again when
+  // comparing with the optional raster-seeded legacy search result.
+  let best = baseline;
+  if (!options.skipLegacy && baseline.items.length < target) {
+    progress('Searching contour placements'); await yieldUI();
+    const legacy = validateLayout(packContour(art, target, sheet, gap, allowRotation), rings, sheet, gap);
+    if (betterLayout(legacy.items, best.items)) best = { method: 'contour search', ...legacy };
+  }
   progress(`Compacting ${best.items.length} copies and filling gaps`); await yieldUI();
-  const improved = compactAndFill(best.items, rings, art, target, sheet, gap, allowRotation, options);
-  const final = validateLayout(improved.items, rings, sheet, gap);
-  if (betterLayout(final.items, best.items)) best = { ...best, items: final.items, method: `${best.method} + compact/refill` };
+  const improved = compactAndFill(best.items, rings, art, target, sheet, gap, {
+    ...options,
+    // Cap the optional quality-refinement phase. The validated baseline and
+    // contour search remain intact; callers/tests can still request more time.
+    budgetMs: options.budgetMs ?? 250,
+  });
+  // compactAndFill starts from the validated baseline and checks every accepted
+  // move/add against all other exact vector shapes, so a second full validation
+  // pass here would repeat the most expensive work without changing the result.
+  if (betterLayout(improved.items, best.items)) best = { ...best, items: improved.items, method: `${best.method} + compact/refill` };
   return { items: best.items, method: best.method, baselineCount: baseline.items.length, added: best.items.length - baseline.items.length, compactMoves: improved.moves, timedOut: improved.timedOut, cutArea: filledArea(rings) };
 }
